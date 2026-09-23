@@ -9,7 +9,9 @@
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2pdf.js -->
+    <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 p-4 md:p-8">
     <div class="max-w-7xl mx-auto space-y-6">
@@ -132,29 +134,30 @@
                 </div>
 
                 <button @click="saveProject" class="w-full bg-emerald-600 text-white p-3 rounded-lg font-semibold hover:bg-emerald-700 transition" x-text="t.saveBtn"></button>
+                <button @click="downloadPDF" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition mt-2" x-text="t.downloadPdf"></button>
                 <p x-text="saveStatus" class="text-sm text-center font-medium mt-2"></p>
             </div>
 
-            <!-- Results & Simulation Panel -->
-            <div class="lg:col-span-2 space-y-6">
+            <!-- Results & Simulation Panel (Delimitato per l'export PDF) -->
+            <div id="pdf-export-area" class="lg:col-span-2 space-y-6 bg-white p-2 rounded-xl">
                 <!-- Metrics Cards -->
                 <div class="grid grid-cols-3 gap-4">
-                    <div class="bg-white p-4 rounded-xl shadow-sm">
+                    <div class="bg-slate-50 p-4 rounded-xl shadow-sm border">
                         <h3 class="text-xs text-slate-500" x-text="t.volume"></h3>
                         <p class="text-xl font-bold text-slate-900" x-text="volume + ' m³'"></p>
                     </div>
-                    <div class="bg-white p-4 rounded-xl shadow-sm">
+                    <div class="bg-slate-50 p-4 rounded-xl shadow-sm border">
                         <h3 class="text-xs text-slate-500" x-text="t.rtCurrent"></h3>
                         <p class="text-xl font-bold text-blue-600" x-text="avgRtCurrent + ' s'"></p>
                     </div>
-                    <div class="bg-white p-4 rounded-xl shadow-sm bg-indigo-50">
+                    <div class="bg-indigo-50/80 p-4 rounded-xl shadow-sm border border-indigo-100">
                         <h3 class="text-xs text-indigo-600 font-semibold" x-text="t.rtTreated"></h3>
                         <p class="text-xl font-bold text-indigo-700" x-text="avgRtTreated + ' s'"></p>
                     </div>
                 </div>
 
                 <!-- Manual Sound Level Meter Overrides -->
-                <div class="bg-white p-6 rounded-xl shadow-sm">
+                <div class="bg-white p-6 rounded-xl shadow-sm border">
                     <h3 class="text-md font-semibold mb-2" x-text="t.manualTitle"></h3>
                     <p class="text-xs text-slate-500 mb-4" x-text="t.manualDesc"></p>
                     <div class="grid grid-cols-6 gap-2">
@@ -168,7 +171,7 @@
                 </div>
 
                 <!-- Chart Container -->
-                <div class="bg-white p-6 rounded-xl shadow-sm">
+                <div class="bg-white p-6 rounded-xl shadow-sm border">
                     <h3 class="text-lg font-semibold mb-4" x-text="t.chartTitle"></h3>
                     <div class="relative h-80">
                         <canvas id="acousticsChart"></canvas>
@@ -176,7 +179,7 @@
                 </div>
 
                 <!-- Audio Simulation Panel with Graphical Widget -->
-                <div class="bg-white p-6 rounded-xl shadow-sm space-y-4">
+                <div class="bg-white p-6 rounded-xl shadow-sm border space-y-4">
                     <h3 class="text-lg font-semibold" x-text="t.audioTitle"></h3>
                     <p class="text-sm text-slate-500" x-text="t.audioDesc"></p>
                     
@@ -237,6 +240,7 @@
                 productSelect: "Produkt aus Katalog",
                 treatmentPercentage: "Zu behandelnde Fläche (%)",
                 saveBtn: "In Neon DB speichern",
+                downloadPdf: "PDF-Bericht herunterladen",
                 volume: "Raumvolumen",
                 rtCurrent: "Nachhallzeit Ist",
                 rtTreated: "Nachhallzeit Mit Projekt",
@@ -248,8 +252,6 @@
                 playBefore: "Vorher (Ohne Dämmung)",
                 playAfter: "Nachher (Mit Akustik)",
                 saved: "Erfolgreich gespeichert!",
-                error: "Fehler beim Speichern."
-                saved: "Erfolgreich gespeichert!",
                 error: "Fehler beim Speichern.",
                 products: {
                     melamina: "Melaminschaum / Basotect (5 cm)",
@@ -257,7 +259,8 @@
                     stratocell: "Stratocell Whisper (5 cm)",
                     poliestere: "Polyesterfaser (5 cm)",
                     fibrotech: "FibroTech Akustikpaneele"
-                 },
+                }
+            },
             ita: {
                 title: "Calcolatore Acustico e Tempo di Riverbero",
                 params: "Parametri della Stanza",
@@ -275,6 +278,7 @@
                 productSelect: "Prodotto a Catalogo",
                 treatmentPercentage: "Percentuale di superficie da trattare",
                 saveBtn: "Salva nel Database Neon",
+                downloadPdf: "Scarica Report PDF",
                 volume: "Volume Stanza",
                 rtCurrent: "Riverbero Attuale",
                 rtTreated: "Riverbero Trattato",
@@ -286,12 +290,14 @@
                 playBefore: "Prima (Senza Pannelli)",
                 playAfter: "Dopo (Con Trattamento)",
                 saved: "Salvato con successo!",
-                error: "Errore durante il salvataggio."
-                melamina: "Schiuma di Melamina / Basotect (5 cm)",
-                poliuretano: "Poliuretano Espanso (5 cm)",
-                stratocell: "Stratocell Whisper (5 cm)",
-                poliestere: "Fibra di Poliestere (5 cm)",
-                fibrotech: "FibroTech Pannelli dogati"
+                error: "Errore durante il salvataggio.",
+                products: {
+                    melamina: "Schiuma di Melamina / Basotect (5 cm)",
+                    poliuretano: "Poliuretano Espanso (5 cm)",
+                    stratocell: "Stratocell Whisper (5 cm)",
+                    poliestere: "Fibra di Poliestere (5 cm)",
+                    fibrotech: "FibroTech Pannelli dogati"
+                }
             }
         };
 
@@ -313,7 +319,6 @@
         };
 
         function acousticsApp() {
-            // ISTANZA GRAFICO FUORI DAL PROXY DI ALPINE (Risolve definitivamente il blocco del rendering)
             let chartInstance = null;
 
             return {
@@ -531,7 +536,6 @@
                     const sumTreated = treatedRtList.reduce((a, b) => a + b, 0);
                     this.avgRtTreated = parseFloat((sumTreated / treatedRtList.length).toFixed(2));
 
-                    // Aggiornamento sicuro tramite la variabile esterna non proxy
                     if (chartInstance) {
                         chartInstance.data.datasets[0].data = [...this.rtCurrentData];
                         chartInstance.data.datasets[1].data = [...this.rtOptimizedData];
@@ -585,6 +589,18 @@
                         this.isPlayingBefore = false;
                         this.isPlayingAfter = false;
                     }, decay * 1000);
+                },
+
+                downloadPDF() {
+                    const element = document.getElementById('pdf-export-area');
+                    const opt = {
+                        margin:       10,
+                        filename:     `Rapporto_Acustico_${this.projectName.replace(/\s+/g, '_')}.pdf`,
+                        image:        { type: 'jpeg', quality: 0.98 },
+                        html2canvas:  { scale: 2, useCORS: true, logging: false },
+                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    };
+                    html2pdf().from(element).set(opt).save();
                 },
 
                 async saveProject() {
