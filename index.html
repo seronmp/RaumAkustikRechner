@@ -114,11 +114,11 @@
                     <div>
                         <label class="block text-xs font-medium" x-text="t.productSelect"></label>
                         <select x-model="selectedProduct" @change="calculate" class="w-full mt-1 p-2 border rounded-lg text-sm bg-white">
-                            <option value="melamina">Schiuma di Melamina / Basotect (5 cm)</option>
-                            <option value="poliuretano">Poliuretano Espanso (5 cm)</option>
-                            <option value="stratocell">Stratocell Whisper (5 cm)</option>
-                            <option value="poliestere">Fibra di Poliestere (5 cm)</option>
-                            <option value="fibrotech">FibroTech Pannelli dogati</option>
+                            <option value="melamina" x-text="t.products.melamina"></option>
+                            <option value="poliuretano" x-text="t.products.poliuretano"></option>
+                            <option value="stratocell" x-text="t.products.stratocell"></option>
+                            <option value="poliestere" x-text="t.products.poliestere"></option>
+                            <option value="fibrotech" x-text="t.products.fibrotech"></option>
                         </select>
                     </div>
 
@@ -249,7 +249,15 @@
                 playAfter: "Nachher (Mit Akustik)",
                 saved: "Erfolgreich gespeichert!",
                 error: "Fehler beim Speichern."
-            },
+                saved: "Erfolgreich gespeichert!",
+                error: "Fehler beim Speichern.",
+                products: {
+                    melamina: "Melaminschaum / Basotect (5 cm)",
+                    poliuretano: "Polyurethanschaum (5 cm)",
+                    stratocell: "Stratocell Whisper (5 cm)",
+                    poliestere: "Polyesterfaser (5 cm)",
+                    fibrotech: "FibroTech Akustikpaneele"
+                 },
             ita: {
                 title: "Calcolatore Acustico e Tempo di Riverbero",
                 params: "Parametri della Stanza",
@@ -279,6 +287,11 @@
                 playAfter: "Dopo (Con Trattamento)",
                 saved: "Salvato con successo!",
                 error: "Errore durante il salvataggio."
+                melamina: "Schiuma di Melamina / Basotect (5 cm)",
+                poliuretano: "Poliuretano Espanso (5 cm)",
+                stratocell: "Stratocell Whisper (5 cm)",
+                poliestere: "Fibra di Poliestere (5 cm)",
+                fibrotech: "FibroTech Pannelli dogati"
             }
         };
 
