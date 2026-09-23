@@ -127,7 +127,7 @@
                             <span x-text="t.treatmentPercentage"></span>
                             <span class="text-indigo-600 font-bold" x-text="coveragePercentage + '% (' + coverageSquareMeters + ' m²)'"></span>
                         </div>
-                        <input type="range" min="0" max="100" step="5" x-model.number="coveragePercentage" @input="updatePercentage" class="w-full mt-2 accent-indigo-600">
+                        <input type="range" min="0" max="100" step="5" x-model.number="coveragePercentage" @input="updatePercentage" @change="updatePercentage" class="w-full mt-2 accent-indigo-600">
                     </div>
                 </div>
 
@@ -448,7 +448,7 @@
                 updatePercentage() {
                     const totalSurface = this.totalWallArea + this.totalCeilingArea;
                     this.coverageSquareMeters = parseFloat(((totalSurface * this.coveragePercentage) / 100).toFixed(1));
-                    this.calculate(); // Richiama il calcolo e aggiorna il grafico in tempo reale
+                    this.calculate();
                 },
 
                 calculate() {
