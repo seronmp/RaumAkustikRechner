@@ -3,118 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raumakustik Rechner / Calcolatore Acustico</title>
+    <title>Raumakustik Rechner | Calcolatore Acustico</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans antialiased">
-
+<body class="bg-slate-50 text-slate-800 min-p-6">
     <div class="max-w-6xl mx-auto p-4 md:p-8">
         <!-- Header & Language Switcher -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-4 rounded-xl shadow-sm border gap-4">
-            <div>
-                <h1 class="text-xl font-bold text-blue-900" x-text="t.title"></h1>
-                <p class="text-sm text-gray-500" x-text="t.subtitle"></p>
+        <header class="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm">
+            <h1 class="text-2xl font-bold text-slate-900" x-text="t.title"></h1>
+            <div class="flex gap-2">
+                <button @click="lang = 'de'" :class="lang === 'de' ? 'bg-blue-600 text-white' : 'bg-slate-200'" class="px-3 py-1 rounded font-medium text-sm transition">DE</button>
+                <button @click="lang = 'ita'" :class="lang === 'ita' ? 'bg-blue-600 text-white' : 'bg-slate-200'" class="px-3 py-1 rounded font-medium text-sm transition">ITA</button>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="flex bg-gray-200 rounded-lg p-1">
-                    <button @click="setLang('de')" :class="lang === 'de' ? 'bg-blue-600 text-white shadow' : 'text-gray-600'" class="px-3 py-1 rounded-md text-sm font-semibold transition">DE</button>
-                    <button @click="setLang('ita')" :class="lang === 'ita' ? 'bg-blue-600 text-white shadow' : 'text-gray-600'" class="px-3 py-1 rounded-md text-sm font-semibold transition">ITA</button>
-                </div>
-            </div>
-        </div>
+        </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Column: Inputs (Project, Geometry & Materials) -->
-            <div class="lg:col-span-1 space-y-6">
-                <!-- Project Info -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border">
-                    <h2 class="text-md font-semibold mb-3 text-blue-800" x-text="t.projTitle"></h2>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <label class="block font-medium text-gray-600" x-text="t.projName"></label>
-                            <input type="text" x-model="project.name" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block font-medium text-gray-600" x-text="t.custName"></label>
-                            <input type="text" x-model="project.customer" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Inputs Panel -->
+            <div class="bg-white p-6 rounded-xl shadow-sm lg:col-span-1 space-y-4">
+                <h2 class="text-lg font-semibold border-b pb-2" x-text="t.params"></h2>
+                
+                <div>
+                    <label class="block text-sm font-medium" x-text="t.projectName"></label>
+                    <input type="text" x-model="projectName" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                <!-- Geometry (Mit Live-Update bei jeder Eingabe) -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border">
-                    <h2 class="text-md font-semibold mb-3 text-blue-800" x-text="t.geoTitle"></h2>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <label class="block font-medium text-gray-600" x-text="t.length"></label>
-                            <input type="number" step="0.1" x-model.number="room.length" @input="updateCalc" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block font-medium text-gray-600" x-text="t.width"></label>
-                            <input type="number" step="0.1" x-model.number="room.width" @input="updateCalc" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block font-medium text-gray-600" x-text="t.height"></label>
-                            <input type="number" step="0.1" x-model.number="room.height" @input="updateCalc" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                        </div>
-                    </div>
-                    <div class="mt-4 p-3 bg-blue-50 rounded-lg text-xs space-y-1 text-blue-900">
-                        <p><span x-text="t.vol"></span>: <strong x-text="volume + ' m³'"></strong></p>
-                        <p><span x-text="t.area"></span>: <strong x-text="totalArea + ' m²'"></strong></p>
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium" x-text="t.customerName"></label>
+                    <input type="text" x-model="customerName" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                <!-- Materials Selection -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border">
-                    <h2 class="text-md font-semibold mb-3 text-blue-800" x-text="t.matTitle"></h2>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <label class="block font-medium text-gray-600" x-text="t.floorMat"></label>
-                            <select x-model="materials.floor" @change="updateCalc" class="w-full mt-1 p-2 border rounded-lg bg-white">
-                                <option value="parquet" x-text="t.optParquet"></option>
-                                <option value="carpet" x-text="t.optCarpet"></option>
-                                <option value="tiles" x-text="t.optTiles"></option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-medium text-gray-600" x-text="t.wallMat"></label>
-                            <select x-model="materials.wall" @change="updateCalc" class="w-full mt-1 p-2 border rounded-lg bg-white">
-                                <option value="plaster" x-text="t.optPlaster"></option>
-                                <option value="concrete" x-text="t.optConcrete"></option>
-                                <option value="wood" x-text="t.optWood"></option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block font-medium text-gray-600" x-text="t.ceilingMat"></label>
-                            <select x-model="materials.ceiling" @change="updateCalc" class="w-full mt-1 p-2 border rounded-lg bg-white">
-                                <option value="concrete" x-text="t.optConcrete"></option>
-                                <option value="basotect" x-text="t.optAcoustic"></option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column: Chart & Results Evaluation -->
-            <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white p-5 rounded-xl shadow-sm border flex flex-col justify-between">
+                <div class="grid grid-cols-3 gap-2">
                     <div>
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-md font-semibold text-blue-800" x-text="t.chartTitle"></h2>
-                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-medium" x-text="t.statusOk"></span>
-                        </div>
-                        <div class="relative w-full h-80">
-                            <canvas id="rtChart"></canvas>
-                        </div>
+                        <label class="block text-xs font-medium" x-text="t.length"></label>
+                        <input type="number" step="0.1" x-model.number="length" @input="calculate" class="w-full mt-1 p-2 border rounded-lg">
                     </div>
-                    <div class="mt-6 pt-4 border-t flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <span class="text-xs text-gray-400" x-text="t.normInfo"></span>
-                        <div class="flex gap-2 w-full sm:w-auto">
-                            <button @click="saveProject" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium shadow transition text-sm" x-text="t.saveBtn"></button>
-                            <button @click="window.print()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow transition text-sm" x-text="t.exportBtn"></button>
-                        </div>
+                    <div>
+                        <label class="block text-xs font-medium" x-text="t.width"></label>
+                        <input type="number" step="0.1" x-model.number="width" @input="calculate" class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium" x-text="t.height"></label>
+                        <input type="number" step="0.1" x-model.number="height" @input="calculate" class="w-full mt-1 p-2 border rounded-lg">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium" x-text="t.floor"></label>
+                    <select x-model="floorMaterial" @change="calculate" class="w-full mt-1 p-2 border rounded-lg">
+                        <option value="parket">Parkett / Wooden Floor (0.05)</option>
+                        <option value="beton">Beton / Concrete (0.02)</option>
+                        <option value="teppich">Teppich / Carpet (0.25)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium" x-text="t.wall"></label>
+                    <select x-model="wallMaterial" @change="calculate" class="w-full mt-1 p-2 border rounded-lg">
+                        <option value="putz">Putz / Plaster (0.04)</option>
+                        <option value="glas">Glas / Glass (0.03)</option>
+                        <option value="basotect">Basotect Akustik (0.80)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium" x-text="t.ceiling"></label>
+                    <select x-model="ceilingMaterial" @change="calculate" class="w-full mt-1 p-2 border rounded-lg">
+                        <option value="beton">Beton / Concrete (0.02)</option>
+                        <option value="fibrotech">FibroTech Akustik Paneele (0.65)</option>
+                        <option value="stratocell">Stratocell Whisper (0.85)</option>
+                    </select>
+                </div>
+
+                <button @click="saveProject" class="w-full bg-emerald-600 text-white p-3 rounded-lg font-semibold hover:bg-emerald-700 transition" x-text="t.saveBtn"></button>
+                <p x-text="saveStatus" class="text-sm text-center font-medium mt-2"></p>
+            </div>
+
+            <!-- Results & Simulation Panel -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Metrics Cards -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm">
+                        <h3 class="text-sm text-slate-500" x-text="t.volume"></h3>
+                        <p class="text-2xl font-bold text-slate-900" x-text="volume + ' m³'"></p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm">
+                        <h3 class="text-sm text-slate-500" x-text="t.rtCurrent"></h3>
+                        <p class="text-2xl font-bold text-blue-600" x-text="avgRtCurrent + ' s'"></p>
+                    </div>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="text-lg font-semibold mb-4" x-text="t.chartTitle"></h3>
+                    <div class="relative h-72">
+                        <canvas id="acousticsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Audio Simulation Panel (Prima / Dopo) -->
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="text-lg font-semibold mb-2" x-text="t.audioTitle"></h3>
+                    <p class="text-sm text-slate-500 mb-4" x-text="t.audioDesc"></p>
+                    <div class="flex gap-4">
+                        <button @click="playAudio('before')" class="flex-1 bg-amber-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-amber-700 transition" x-text="t.playBefore"></button>
+                        <button @click="playAudio('after')" class="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-indigo-700 transition" x-text="t.playAfter"></button>
                     </div>
                 </div>
             </div>
@@ -122,210 +119,223 @@
     </div>
 
     <script>
-        // Assorbimento acustico per bande d'ottava [125, 250, 500, 1000, 2000, 4000] Hz
-        const dbMat = {
-            parquet: [0.04, 0.04, 0.07, 0.06, 0.06, 0.07],
-            carpet:  [0.02, 0.05, 0.10, 0.20, 0.40, 0.50],
-            tiles:   [0.01, 0.01, 0.01, 0.02, 0.02, 0.02],
-            plaster: [0.10, 0.10, 0.15, 0.20, 0.20, 0.15],
-            concrete:[0.01, 0.01, 0.02, 0.02, 0.03, 0.04],
-            wood:    [0.15, 0.11, 0.10, 0.07, 0.06, 0.07],
-            basotect:[0.12, 0.35, 0.75, 0.95, 0.98, 0.95]
+        const translations = {
+            de: {
+                title: "Raumakustik & Nachhallzeit Rechner",
+                params: "Raumparameter",
+                projectName: "Projektname",
+                customerName: "Kunde",
+                length: "Länge (m)",
+                width: "Breite (m)",
+                height: "Höhe (m)",
+                floor: "Bodenbelag",
+                wall: "Wandmaterial",
+                ceiling: "Decke",
+                saveBtn: "In Neon DB speichern",
+                volume: "Raumvolumen",
+                rtCurrent: "Mittlere Nachhallzeit (Ist)",
+                chartTitle: "Nachhallzeit T60 nach Frequenzen (Sekunden)",
+                audioTitle: "Akustik-Simulation (Vorher / Nachher)",
+                audioDesc: "Hören Sie den simulierten Nachhall im Raum vor und nach dem Akustik-Setup.",
+                playBefore: "Vorher (Ohne Dämmung)",
+                playAfter: "Nachher (Mit Akustik)",
+                saved: "Erfolgreich gespeichert!",
+                error: "Fehler beim Speichern."
+            },
+            ita: {
+                title: "Calcolatore Acustico e Tempo di Riverbero",
+                params: "Parametri della Stanza",
+                projectName: "Nome Progetto",
+                customerName: "Cliente",
+                length: "Lunghezza (m)",
+                width: "Larghezza (m)",
+                height: "Altezza (m)",
+                floor: "Pavimento",
+                wall: "Materiale Pareti",
+                ceiling: "Soffitto",
+                saveBtn: "Salva nel Database Neon",
+                volume: "Volume Stanza",
+                rtCurrent: "Tempo di Riverbero Medio (Attuale)",
+                chartTitle: "Tempo di Riverbero T60 per Frequenze (Secondi)",
+                audioTitle: "Simulazione Acustica (Prima / Dopo)",
+                audioDesc: "Ascolta il riverbero simulato nella stanza prima e dopo l'intervento acustico.",
+                playBefore: "Prima (Senza Pannelli)",
+                playAfter: "Dopo (Con Trattamento)",
+                saved: "Salvato con successo!",
+                error: "Errore durante il salvataggio."
+            }
+        };
+
+        const absorptionCoefficients = {
+            parket: { 125: 0.04, 250: 0.04, 500: 0.03, 1000: 0.03, 2000: 0.02, 4000: 0.02 },
+            beton: { 125: 0.01, 250: 0.01, 500: 0.02, 1000: 0.02, 2000: 0.03, 4000: 0.04 },
+            teppich: { 125: 0.02, 250: 0.08, 500: 0.25, 1000: 0.45, 2000: 0.65, 4000: 0.75 },
+            putz: { 125: 0.02, 250: 0.03, 500: 0.04, 1000: 0.05, 2000: 0.04, 4000: 0.03 },
+            glas: { 125: 0.10, 250: 0.05, 500: 0.03, 1000: 0.02, 2000: 0.02, 4000: 0.02 },
+            basotect: { 125: 0.15, 250: 0.45, 500: 0.85, 1000: 0.95, 2000: 0.95, 4000: 0.90 },
+            fibrotech: { 125: 0.10, 250: 0.30, 500: 0.75, 1000: 0.90, 2000: 0.80, 4000: 0.70 },
+            stratocell: { 125: 0.20, 250: 0.55, 500: 0.90, 1000: 0.95, 2000: 0.90, 4000: 0.85 }
         };
 
         function acousticsApp() {
             return {
-                lang: 'de',
-                project: { name: 'Musterraum Büro', customer: 'Kunde GmbH' },
-                room: { length: 6.0, width: 5.0, height: 3.0 },
-                materials: { floor: 'parquet', wall: 'plaster', ceiling: 'concrete' },
-                chartInstance: null,
-                currentRtValues: [],
-                optimizedRtValues: [],
-                
-                dict: {
-                    de: {
-                        title: "Raumakustik-Rechner",
-                        subtitle: "Nachhallzeit-Berechnung nach Sabine / DIN 18041",
-                        projTitle: "Projektdaten",
-                        projName: "Projektname",
-                        custName: "Kunde",
-                        geoTitle: "1. Raumgeometrie",
-                        length: "Länge (m)",
-                        width: "Breite (m)",
-                        height: "Höhe (m)",
-                        vol: "Volumen",
-                        area: "Fläche",
-                        matTitle: "2. Oberflächen & Materialien",
-                        floorMat: "Bodenbelag",
-                        wallMat: "Wandbekleidung",
-                        ceilingMat: "Deckenbekleidung",
-                        optParquet: "Parkett / Hartboden",
-                        optCarpet: "Teppichboden",
-                        optTiles: "Fliesen / Keramik",
-                        optPlaster: "Putz / Mauerwerk",
-                        optConcrete: "Beton (glatt)",
-                        optWood: "Holzvertäfelung",
-                        optAcoustic: "Akustikdecke (Melamin/Basotect)",
-                        chartTitle: "3. Nachhallzeit T60 im Frequenzverlauf",
-                        statusOk: "Berechnung aktiv",
-                        normInfo: "Gültige Norm: DIN 18041 / ÖNORM B 8115",
-                        saveBtn: "In Neon DB speichern",
-                        exportBtn: "Drucken / PDF"
-                    },
-                    ita: {
-                        title: "Calcolatore Acustico",
-                        subtitle: "Calcolo del tempo di riverberazione secondo Sabine",
-                        projTitle: "Dati Progetto",
-                        projName: "Nome progetto",
-                        custName: "Cliente",
-                        geoTitle: "1. Geometria della stanza",
-                        length: "Lunghezza (m)",
-                        width: "Larghezza (m)",
-                        height: "Altezza (m)",
-                        vol: "Volume",
-                        area: "Superficie",
-                        matTitle: "2. Superfici e Materiali",
-                        floorMat: "Pavimento",
-                        wallMat: "Pareti",
-                        ceilingMat: "Soffitto",
-                        optParquet: "Parquet / Duro",
-                        optCarpet: "Moquette / Tappeto",
-                        optTiles: "Piastrelle / Ceramica",
-                        optPlaster: "Intonaco / Muratura",
-                        optConcrete: "Cemento liscio",
-                        optWood: "Rivestimento in legno",
-                        optAcoustic: "Pannelli fonoassorbenti (Basotect)",
-                        chartTitle: "3. Andamento del tempo di riverberazione T60",
-                        statusOk: "Calcolo attivo",
-                        normInfo: "Normativa di riferimento: DIN 18041",
-                        saveBtn: "Salva su Neon DB",
-                        exportBtn: "Stampa / PDF"
-                    }
-                },
+                lang: 'ita',
+                projectName: 'Ufficio Seron',
+                customerName: 'Cliente Test',
+                length: 6.0,
+                width: 4.0,
+                height: 2.8,
+                floorMaterial: 'parket',
+                wallMaterial: 'putz',
+                ceilingMaterial: 'beton',
+                volume: 67.2,
+                avgRtCurrent: 0.0,
+                rtCurrentData: [0, 0, 0, 0, 0, 0],
+                rtOptimizedData: [0, 0, 0, 0, 0, 0],
+                saveStatus: '',
+                chart: null,
+                frequencies: ['125 Hz', '250 Hz', '500 Hz', '1000 Hz', '2000 Hz', '4000 Hz'],
 
-                get t() { return this.dict[this.lang]; },
-                setLang(l) { this.lang = l; },
-
-                get volume() { 
-                    let v = this.room.length * this.room.width * this.room.height;
-                    return isNaN(v) ? 0 : v.toFixed(1); 
-                },
-                get totalArea() { 
-                    let l = parseFloat(this.room.length) || 0;
-                    let w = parseFloat(this.room.width) || 0;
-                    let h = parseFloat(this.room.height) || 0;
-                    let a = 2 * (l * w + l * h + w * h);
-                    return a.toFixed(1);
-                },
+                get t() { return translations[this.lang]; },
 
                 init() {
-                    this.$nextTick(() => { this.renderChart(); });
-                },
-
-                updateCalc() {
-                    const freqs = [125, 250, 500, 1000, 2000, 4000];
-                    let L = parseFloat(this.room.length) || 0;
-                    let W = parseFloat(this.room.width) || 0;
-                    let H = parseFloat(this.room.height) || 0;
-
-                    let V = L * W * H;
-                    let S_floor = L * W;
-                    let S_ceiling = S_floor;
-                    let S_walls = 2 * (L * H + W * H);
-
-                    let fAlpha = dbMat[this.materials.floor];
-                    let wAlpha = dbMat[this.materials.wall];
-                    let cAlpha = dbMat[this.materials.ceiling];
-                    let optAlpha = dbMat['basotect'];
-
-                    this.currentRtValues = [];
-                    this.optimizedRtValues = [];
-
-                    for (let i = 0; i < freqs.length; i++) {
-                        let A_curr = (S_floor * fAlpha[i]) + (S_walls * wAlpha[i]) + (S_ceiling * cAlpha[i]);
-                        let A_opt = (S_floor * fAlpha[i]) + (S_walls * wAlpha[i]) + (S_ceiling * optAlpha[i]);
-
-                        let t60_c = A_curr > 0 && V > 0 ? (0.161 * V / A_curr).toFixed(2) : 0;
-                        let t60_o = A_opt > 0 && V > 0 ? (0.161 * V / A_opt).toFixed(2) : 0;
-
-                        this.currentRtValues.push(parseFloat(t60_c));
-                        this.optimizedRtValues.push(parseFloat(t60_o));
-                    }
-
-                    if (this.chartInstance) {
-                        this.chartInstance.data.datasets[0].data = this.currentRtValues;
-                        this.chartInstance.data.datasets[1].data = this.optimizedRtValues;
-                        this.chartInstance.update();
-                    }
-                },
-
-                renderChart() {
-                    const ctx = document.getElementById('rtChart').getContext('2d');
-                    this.chartInstance = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: ['125 Hz', '250 Hz', '500 Hz', '1 kHz', '2 kHz', '4 kHz'],
-                            datasets: [
-                                {
-                                    label: 'Ist-Zustand / Stato attuale (T60)',
-                                    data: [],
-                                    borderColor: '#ef4444',
-                                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                                    tension: 0.2,
-                                    fill: true
-                                },
-                                {
-                                    label: 'Optimierter Zustand / Stato ottimizzato',
-                                    data: [],
-                                    borderColor: '#3b82f6',
-                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                    tension: 0.2,
-                                    fill: true
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: { beginAtZero: true, title: { display: true, text: 'Sekunden (s) / Secondi' } }
+                    this.calculate();
+                    this.$nextTick(() => {
+                        const ctx = document.getElementById('acousticsChart').getContext('2d');
+                        this.chart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: this.frequencies,
+                                datasets: [
+                                    {
+                                        label: 'T60 Attuale (s)',
+                                        data: this.rtCurrentData,
+                                        borderColor: '#2563eb',
+                                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                        tension: 0.2,
+                                        fill: true
+                                    },
+                                    {
+                                        label: 'T60 Ottimizzato (s)',
+                                        data: this.rtOptimizedData,
+                                        borderColor: '#10b981',
+                                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                        tension: 0.2,
+                                        fill: true
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: { y: { beginAtZero: true, max: 3.0 } }
                             }
-                        }
+                        });
                     });
-                    this.updateCalc();
+                },
+
+                calculate() {
+                    this.volume = parseFloat((this.length * this.width * this.height).toFixed(2));
+                    const floorArea = this.length * this.width;
+                    const wallArea = 2 * (this.length + this.height) * this.height;
+                    const ceilingArea = floorArea;
+                    const totalArea = floorArea + wallArea + ceilingArea;
+
+                    const freqs = [125, 250, 500, 1000, 2000, 4000];
+                    let currentRtList = [];
+                    let optimizedRtList = [];
+
+                    freqs.forEach(f => {
+                        // Assorbimento attuale
+                        const aFloor = absorptionCoefficients[this.floorMaterial][f] * floorArea;
+                        const aWall = absorptionCoefficients[this.wallMaterial][f] * wallArea;
+                        const aCeiling = absorptionCoefficients[this.ceilingMaterial][f] * ceilingArea;
+                        const totalAbsorptionCurrent = aFloor + aWall + aCeiling + (0.16 * this.volume / 30); // aria + base
+                        
+                        let rtCurr = (0.16 * this.volume) / totalAbsorptionCurrent;
+                        currentRtList.push(parseFloat(rtCurr.toFixed(2)));
+
+                        // Ottimizzato (simulando l'aggiunta di pannelli fonoassorbenti a parete/soffitto)
+                        const aWallOpt = 0.85 * (wallArea * 0.4) + absorptionCoefficients[this.wallMaterial][f] * (wallArea * 0.6);
+                        const totalAbsorptionOpt = aFloor + aWallOpt + aCeiling + (0.16 * this.volume / 30);
+                        let rtOpt = (0.16 * this.volume) / totalAbsorptionOpt;
+                        optimizedRtList.push(parseFloat(rtOpt.toFixed(2)));
+                    });
+
+                    this.rtCurrentData = currentRtList;
+                    this.rtOptimizedData = optimizedRtList;
+                    
+                    const sum = currentRtList.reduce((a, b) => a + b, 0);
+                    this.avgRtCurrent = parseFloat((sum / currentRtList.length).toFixed(2));
+
+                    if (this.chart) {
+                        this.chart.data.datasets[0].data = this.rtCurrentData;
+                        this.chart.data.datasets[1].data = this.rtOptimizedData;
+                        this.chart.update();
+                    }
+                },
+
+                playAudio(type) {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const bufferSize = audioCtx.sampleRate * 2;
+                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const output = buffer.getChannelData(0);
+
+                    // Genera rumore bianco
+                    for (let i = 0; i < bufferSize; i++) {
+                        output[i] = Math.random() * 2 - 1;
+                    }
+
+                    const whiteNoise = audioCtx.createBufferSource();
+                    whiteNoise.buffer = buffer;
+
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.value = type === 'before' ? 3000 : 1200; // Taglio diverso per simulare l'assorbimento
+
+                    const gainNode = audioCtx.createGain();
+                    const now = audioCtx.currentTime;
+                    
+                    // Invviluppo sonoro simulato (Decadimento/Riverbero)
+                    const decay = type === 'before' ? 1.8 : 0.4; 
+                    gainNode.gain.setValueAtTime(0.5, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + decay);
+
+                    whiteNoise.connect(filter);
+                    filter.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+
+                    whiteNoise.start(now);
+                    whiteNoise.stop(now + decay);
                 },
 
                 async saveProject() {
-                    let payload = {
-                        project_name: this.project.name,
-                        customer_name: this.project.customer,
-                        length: this.room.length,
-                        width: this.room.width,
-                        height: this.room.height,
-                        floor_material: this.materials.floor,
-                        wall_material: this.materials.wall,
-                        ceiling_material: this.materials.ceiling,
-                        volume: parseFloat(this.volume),
-                        rt_current: this.currentRtValues,
-                        rt_optimized: this.optimizedRtValues
-                    };
-
                     try {
-                        let res = await fetch('/api/save', {
+                        const response = await fetch('/api/save', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
+                            body: JSON.stringify({
+                                project_name: this.projectName,
+                                customer_name: this.customerName,
+                                length: this.length,
+                                width: this.width,
+                                height: this.height,
+                                floor_material: this.floorMaterial,
+                                wall_material: this.wallMaterial,
+                                ceiling_material: this.ceilingMaterial,
+                                volume: this.volume,
+                                rt_current: this.rtCurrentData,
+                                rt_optimized: this.rtOptimizedData
+                            })
                         });
-                        let data = await res.json();
-                        if (res.ok) {
-                            alert(this.lang === 'de' ? 'Erfolgreich in Neon DB gespeichert! ID: ' + data.id : 'Salvato con successo su Neon DB! ID: ' + data.id);
+                        const data = await response.json();
+                        if (data.success) {
+                            this.saveStatus = this.t.saved;
                         } else {
-                            alert('Fehler beim Speichern');
+                            this.saveStatus = this.t.error;
                         }
                     } catch (e) {
-                        console.error(e);
-                        alert('Netzwerkfehler');
+                        this.saveStatus = this.t.error;
                     }
                 }
             }
