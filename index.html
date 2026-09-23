@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raumakustik Rechner | Calcolatore Acustico</title>
+    <title>Raumakustik Rechner | Eurokustik</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js -->
@@ -12,110 +12,120 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- html2pdf.js -->
     <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+    <style>
+        .ek-blue { background-color: #0f172a; }
+        .ek-accent { color: #0284c7; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 p-4 md:p-8">
+<body class="bg-slate-100 text-slate-800 p-4 md:p-8 font-sans">
     <div class="max-w-7xl mx-auto space-y-6">
         <!-- Header & Language Switcher -->
-        <header class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm">
-            <h1 class="text-2xl font-bold text-slate-900" x-text="t.title"></h1>
+        <header class="flex justify-between items-center bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex items-center gap-3">
+                <div class="bg-slate-900 text-white font-extrabold text-xl px-3.5 py-1.5 rounded-lg tracking-wider">EK</div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900" x-text="t.title"></h1>
+                    <p class="text-xs text-slate-500">Eurokustik Professional Acoustic Solutions</p>
+                </div>
+            </div>
             <div class="flex gap-2">
-                <button @click="lang = 'de'" :class="lang === 'de' ? 'bg-blue-600 text-white' : 'bg-slate-200'" class="px-3 py-1 rounded font-medium text-sm transition">DE</button>
-                <button @click="lang = 'ita'" :class="lang === 'ita' ? 'bg-blue-600 text-white' : 'bg-slate-200'" class="px-3 py-1 rounded font-medium text-sm transition">ITA</button>
+                <button @click="lang = 'de'" :class="lang === 'de' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700'" class="px-3 py-1 rounded-md font-semibold text-xs transition">DE</button>
+                <button @click="lang = 'ita'" :class="lang === 'ita' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700'" class="px-3 py-1 rounded-md font-semibold text-xs transition">ITA</button>
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Inputs Panel -->
-            <div class="bg-white p-6 rounded-xl shadow-sm lg:col-span-1 space-y-4">
-                <h2 class="text-lg font-semibold border-b pb-2" x-text="t.params"></h2>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 lg:col-span-1 space-y-5">
+                <h2 class="text-md font-bold text-slate-900 border-b pb-2 uppercase tracking-wide" x-text="t.params"></h2>
                 
                 <div>
-                    <label class="block text-sm font-medium" x-text="t.projectName"></label>
-                    <input type="text" x-model="projectName" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-bold text-slate-700 uppercase" x-text="t.projectName"></label>
+                    <input type="text" x-model="projectName" class="w-full mt-1 p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:outline-none">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium" x-text="t.customerName"></label>
-                    <input type="text" x-model="customerName" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-bold text-slate-700 uppercase" x-text="t.customerName"></label>
+                    <input type="text" x-model="customerName" class="w-full mt-1 p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:outline-none">
                 </div>
 
                 <div class="grid grid-cols-3 gap-2">
                     <div>
-                        <label class="block text-xs font-medium" x-text="t.length"></label>
-                        <input type="number" step="0.1" x-model.number="length" @input="updateDimensions" class="w-full mt-1 p-2 border rounded-lg">
+                        <label class="block text-xs font-bold text-slate-700" x-text="t.length"></label>
+                        <input type="number" step="0.1" x-model.number="length" @input="updateDimensions" class="w-full mt-1 p-2 text-sm border border-slate-300 rounded-lg text-center">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium" x-text="t.width"></label>
-                        <input type="number" step="0.1" x-model.number="width" @input="updateDimensions" class="w-full mt-1 p-2 border rounded-lg">
+                        <label class="block text-xs font-bold text-slate-700" x-text="t.width"></label>
+                        <input type="number" step="0.1" x-model.number="width" @input="updateDimensions" class="w-full mt-1 p-2 text-sm border border-slate-300 rounded-lg text-center">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium" x-text="t.height"></label>
-                        <input type="number" step="0.1" x-model.number="height" @input="updateDimensions" class="w-full mt-1 p-2 border rounded-lg">
+                        <label class="block text-xs font-bold text-slate-700" x-text="t.height"></label>
+                        <input type="number" step="0.1" x-model.number="height" @input="updateDimensions" class="w-full mt-1 p-2 text-sm border border-slate-300 rounded-lg text-center">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium" x-text="t.floor"></label>
-                    <select x-model="floorMaterial" @change="updateDimensions" class="w-full mt-1 p-2 border rounded-lg">
+                    <label class="block text-xs font-bold text-slate-700 uppercase" x-text="t.floor"></label>
+                    <select x-model="floorMaterial" @change="updateDimensions" class="w-full mt-1 p-2.5 text-sm border border-slate-300 rounded-lg bg-white">
                         <option value="parket">Parkett / Wooden Floor (0.05)</option>
                         <option value="beton">Beton / Concrete (0.02)</option>
                         <option value="teppich">Teppich / Carpet (0.25)</option>
                     </select>
                 </div>
 
-                <!-- Wall Materials breakdown by m² with auto-balancing -->
-                <div class="border-t pt-3 space-y-2">
+                <!-- Wall Materials breakdown -->
+                <div class="border-t pt-4 space-y-3">
                     <div class="flex justify-between items-center">
-                        <label class="text-sm font-semibold text-slate-700" x-text="t.wallsBreakdown"></label>
-                        <span class="text-xs text-slate-500" x-text="t.totalWalls + ': ' + totalWallArea + ' m²'"></span>
+                        <label class="text-xs font-bold text-slate-700 uppercase" x-text="t.wallsBreakdown"></label>
+                        <span class="text-xs font-semibold text-slate-500" x-text="t.totalWalls + ': ' + totalWallArea + ' m²'"></span>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                            <span class="text-slate-600">Glas / Fenster (m²)</span>
-                            <input type="number" step="0.5" x-model.number="walls.glas" @input="onWallAreaChange('glas')" class="w-full mt-1 p-1.5 border rounded">
+                            <span class="text-slate-600 font-medium">Glas / Fenster (m²)</span>
+                            <input type="number" step="0.5" x-model.number="walls.glas" @input="onWallAreaChange('glas')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                         <div>
-                            <span class="text-slate-600">Putz (m²)</span>
-                            <input type="number" step="0.5" x-model.number="walls.putz" @input="onWallAreaChange('putz')" class="w-full mt-1 p-1.5 border rounded">
+                            <span class="text-slate-600 font-medium">Putz (m²)</span>
+                            <input type="number" step="0.5" x-model.number="walls.putz" @input="onWallAreaChange('putz')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                         <div>
-                            <span class="text-slate-600">Holz (m²)</span>
-                            <input type="number" step="0.5" x-model.number="walls.holz" @input="onWallAreaChange('holz')" class="w-full mt-1 p-1.5 border rounded">
+                            <span class="text-slate-600 font-medium">Holz (m²)</span>
+                            <input type="number" step="0.5" x-model.number="walls.holz" @input="onWallAreaChange('holz')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                         <div>
-                            <span class="text-slate-600">Beton (m²)</span>
-                            <input type="number" step="0.5" x-model.number="walls.beton" @input="onWallAreaChange('beton')" class="w-full mt-1 p-1.5 border rounded">
+                            <span class="text-slate-600 font-medium">Beton (m²)</span>
+                            <input type="number" step="0.5" x-model.number="walls.beton" @input="onWallAreaChange('beton')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                     </div>
                 </div>
 
-                <!-- Ceiling Materials breakdown by m² -->
-                <div class="border-t pt-3 space-y-2">
+                <!-- Ceiling Materials breakdown -->
+                <div class="border-t pt-4 space-y-3">
                     <div class="flex justify-between items-center">
-                        <label class="text-sm font-semibold text-slate-700" x-text="t.ceilingBreakdown"></label>
-                        <span class="text-xs text-slate-500" x-text="t.totalCeiling + ': ' + totalCeilingArea + ' m²'"></span>
+                        <label class="text-xs font-bold text-slate-700 uppercase" x-text="t.ceilingBreakdown"></label>
+                        <span class="text-xs font-semibold text-slate-500" x-text="t.totalCeiling + ': ' + totalCeilingArea + ' m²'"></span>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                            <span class="text-slate-600">Beton Decke (m²)</span>
-                            <input type="number" step="0.5" x-model.number="ceiling.beton" @input="onCeilingAreaChange('beton')" class="w-full mt-1 p-1.5 border rounded">
+                            <span class="text-slate-600 font-medium">Beton Decke (m²)</span>
+                            <input type="number" step="0.5" x-model.number="ceiling.beton" @input="onCeilingAreaChange('beton')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                         <div>
-                            <span class="text-slate-600">Holz Decke (m²)</span>
-                            <input type="number" step="0.5" x-model.number="ceiling.holz" @input="onCeilingAreaChange('holz')" class="w-full mt-1 p-1.5 border rounded">
+                            <span class="text-slate-600 font-medium">Holz Decke (m²)</span>
+                            <input type="number" step="0.5" x-model.number="ceiling.holz" @input="onCeilingAreaChange('holz')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                     </div>
                 </div>
 
-                <!-- Catalog Treatment Configuration with Percentage Selector -->
-                <div class="border-t pt-4 space-y-3 bg-indigo-50/50 p-3 rounded-lg border">
-                    <h3 class="text-sm font-semibold text-indigo-700" x-text="t.treatmentTitle"></h3>
+                <!-- Treatment Configuration -->
+                <div class="border-t pt-4 space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wide" x-text="t.treatmentTitle"></h3>
                     
                     <div>
-                        <label class="block text-xs font-medium" x-text="t.productSelect"></label>
-                        <select x-model="selectedProduct" @change="calculate" class="w-full mt-1 p-2 border rounded-lg text-sm bg-white">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1" x-text="t.productSelect"></label>
+                        <select x-model="selectedProduct" @change="calculate" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white font-medium">
                             <option value="melamina" x-text="t.products.melamina"></option>
                             <option value="poliuretano" x-text="t.products.poliuretano"></option>
                             <option value="stratocell" x-text="t.products.stratocell"></option>
@@ -125,119 +135,119 @@
                     </div>
 
                     <div>
-                        <div class="flex justify-between items-center text-xs font-medium">
-                            <span x-text="t.treatmentPercentage"></span>
-                            <span class="text-indigo-600 font-bold" x-text="coveragePercentage + '% (' + coverageSquareMeters + ' m²)'"></span>
+                        <div class="flex justify-between items-center text-xs font-semibold mb-1">
+                            <span class="text-slate-600" x-text="t.treatmentPercentage"></span>
+                            <span class="text-sky-600 font-bold text-sm" x-text="coveragePercentage + '% (' + coverageSquareMeters + ' m²)'"></span>
                         </div>
-                        <input type="range" min="0" max="100" step="5" x-model.number="coveragePercentage" @input="updatePercentage" @change="updatePercentage" class="w-full mt-2 accent-indigo-600">
+                        <input type="range" min="0" max="100" step="5" x-model.number="coveragePercentage" @input="updatePercentage" @change="updatePercentage" class="w-full accent-slate-900 cursor-pointer">
                     </div>
                 </div>
 
-                <button @click="saveProject" class="w-full bg-emerald-600 text-white p-3 rounded-lg font-semibold hover:bg-emerald-700 transition" x-text="t.saveBtn"></button>
-                <button @click="downloadPDF" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition mt-2" x-text="t.downloadPdf"></button>
-                <p x-text="saveStatus" class="text-sm text-center font-medium mt-2"></p>
+                <button @click="saveProject" class="w-full bg-slate-900 text-white p-3 rounded-lg font-semibold hover:bg-slate-800 transition text-sm shadow-sm" x-text="t.saveBtn"></button>
+                <button @click="downloadPDF" class="w-full bg-sky-600 text-white p-3 rounded-lg font-semibold hover:bg-sky-700 transition text-sm shadow-sm mt-2" x-text="t.downloadPdf"></button>
+                <p x-text="saveStatus" class="text-xs text-center font-medium mt-2 text-slate-600"></p>
             </div>
 
-            <!-- Results & Simulation Panel (Area inclusiva di intestazione PDF con logo EK e Footer) -->
-            <div id="pdf-export-area" class="lg:col-span-2 space-y-6 bg-white p-6 rounded-xl shadow-sm border">
+            <!-- Results & Simulation Panel -->
+            <div id="pdf-export-area" class="lg:col-span-2 space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                 
                 <!-- PDF Header con Logo EK -->
                 <div class="flex justify-between items-center border-b pb-4">
                     <div class="flex items-center gap-3">
-                        <div class="bg-blue-600 text-white font-black text-2xl px-3.5 py-2 rounded-xl shadow-md">EK</div>
+                        <div class="bg-slate-900 text-white font-black text-2xl px-4 py-2 rounded-lg">EK</div>
                         <div>
-                            <h2 class="font-bold text-slate-900 text-lg">Eurokustik - Acoustic Report</h2>
+                            <h2 class="font-bold text-slate-900 text-base">Eurokustik - Acoustic Report</h2>
                             <p class="text-xs text-slate-500"><span x-text="projectName"></span> | <span x-text="customerName"></span></p>
                         </div>
                     </div>
-                    <div class="text-right text-xs font-semibold text-blue-600">
+                    <div class="text-right text-xs font-bold text-sky-600">
                         www.eurokustik.com
                     </div>
                 </div>
 
                 <!-- Metrics Cards -->
                 <div class="grid grid-cols-3 gap-4">
-                    <div class="bg-slate-50 p-4 rounded-xl shadow-sm border">
-                        <h3 class="text-xs text-slate-500" x-text="t.volume"></h3>
-                        <p class="text-xl font-bold text-slate-900" x-text="volume + ' m³'"></p>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-500 uppercase" x-text="t.volume"></h3>
+                        <p class="text-xl font-extrabold text-slate-900 mt-1" x-text="volume + ' m³'"></p>
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-xl shadow-sm border">
-                        <h3 class="text-xs text-slate-500" x-text="t.rtCurrent"></h3>
-                        <p class="text-xl font-bold text-blue-600" x-text="avgRtCurrent + ' s'"></p>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-500 uppercase" x-text="t.rtCurrent"></h3>
+                        <p class="text-xl font-extrabold text-sky-600 mt-1" x-text="avgRtCurrent + ' s'"></p>
                     </div>
-                    <div class="bg-indigo-50/80 p-4 rounded-xl shadow-sm border border-indigo-100">
-                        <h3 class="text-xs text-indigo-600 font-semibold" x-text="t.rtTreated"></h3>
-                        <p class="text-xl font-bold text-indigo-700" x-text="avgRtTreated + ' s'"></p>
+                    <div class="bg-slate-900 text-white p-4 rounded-xl border border-slate-900 shadow-sm">
+                        <h3 class="text-xs font-bold text-sky-400 uppercase" x-text="t.rtTreated"></h3>
+                        <p class="text-xl font-extrabold text-white mt-1" x-text="avgRtTreated + ' s'"></p>
                     </div>
                 </div>
 
                 <!-- Manual Sound Level Meter Overrides -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border">
-                    <h3 class="text-md font-semibold mb-2" x-text="t.manualTitle"></h3>
-                    <p class="text-xs text-slate-500 mb-4" x-text="t.manualDesc"></p>
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <h3 class="text-sm font-bold text-slate-900 uppercase mb-1" x-text="t.manualTitle"></h3>
+                    <p class="text-xs text-slate-500 mb-3" x-text="t.manualDesc"></p>
                     <div class="grid grid-cols-6 gap-2">
                         <template x-for="(freq, index) in frequencies" :key="freq">
                             <div>
-                                <label class="block text-xs font-medium text-center text-slate-600" x-text="freq"></label>
-                                <input type="number" step="0.05" x-model.number="rtCurrentData[index]" @input="updateChartFromManual" class="w-full mt-1 p-1 text-center text-sm border rounded-md">
+                                <label class="block text-xs font-bold text-center text-slate-600 mb-1" x-text="freq"></label>
+                                <input type="number" step="0.05" x-model.number="rtCurrentData[index]" @input="updateChartFromManual" class="w-full p-2 text-center text-sm font-semibold border border-slate-300 rounded-md bg-white">
                             </div>
                         </template>
                     </div>
                 </div>
 
                 <!-- Chart Container -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border">
-                    <h3 class="text-lg font-semibold mb-4" x-text="t.chartTitle"></h3>
+                <div class="bg-white p-5 rounded-xl border border-slate-200">
+                    <h3 class="text-sm font-bold text-slate-900 uppercase mb-4" x-text="t.chartTitle"></h3>
                     <div class="relative h-72">
                         <canvas id="acousticsChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Audio Simulation Panel with Graphical Widget -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border space-y-4">
-                    <h3 class="text-lg font-semibold" x-text="t.audioTitle"></h3>
-                    <p class="text-sm text-slate-500" x-text="t.audioDesc"></p>
+                <!-- Audio Simulation Panel -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+                    <h3 class="text-sm font-bold text-slate-900 uppercase" x-text="t.audioTitle"></h3>
+                    <p class="text-xs text-slate-500" x-text="t.audioDesc"></p>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Before Widget -->
-                        <div class="p-4 border rounded-xl bg-amber-50/50 flex flex-col justify-between space-y-3">
+                        <div class="p-4 border border-slate-200 rounded-xl bg-white flex flex-col justify-between space-y-3 shadow-sm">
                             <div>
-                                <h4 class="font-semibold text-amber-900 text-sm" x-text="t.playBefore"></h4>
-                                <p class="text-xs text-amber-700/80">Riverbero stimato: <span class="font-bold" x-text="avgRtCurrent + ' s'"></span></p>
+                                <h4 class="font-bold text-slate-800 text-xs uppercase" x-text="t.playBefore"></h4>
+                                <p class="text-xs text-slate-500">Riverbero stimato: <span class="font-bold text-slate-800" x-text="avgRtCurrent + ' s'"></span></p>
                             </div>
-                            <div class="flex items-center justify-between gap-1 h-10 px-2 bg-white/80 rounded border border-amber-200">
+                            <div class="flex items-center justify-between gap-1 h-8 px-2 bg-slate-100 rounded border border-slate-200">
                                 <template x-for="i in 16">
-                                    <div class="w-1 bg-amber-400 rounded-full transition-all duration-300" :style="isPlayingBefore ? `height: ${Math.max(15, Math.random() * 32)}px` : 'height: 6px'"></div>
+                                    <div class="w-1 bg-slate-400 rounded-full transition-all duration-300" :style="isPlayingBefore ? `height: ${Math.max(12, Math.random() * 24)}px` : 'height: 4px'"></div>
                                 </template>
                             </div>
-                            <button @click="playAudio('before')" :disabled="isPlayingBefore || isPlayingAfter" class="w-full bg-amber-600 text-white py-2 rounded-lg font-medium hover:bg-amber-700 transition disabled:opacity-50 text-sm">
+                            <button @click="playAudio('before')" :disabled="isPlayingBefore || isPlayingAfter" class="w-full bg-slate-200 text-slate-800 py-2 rounded-lg font-bold hover:bg-slate-300 transition disabled:opacity-50 text-xs uppercase">
                                 <span x-text="isPlayingBefore ? 'Playing...' : t.playBefore"></span>
                             </button>
                         </div>
 
                         <!-- After Widget -->
-                        <div class="p-4 border rounded-xl bg-indigo-50/50 flex flex-col justify-between space-y-3">
+                        <div class="p-4 border border-sky-100 rounded-xl bg-sky-50/50 flex flex-col justify-between space-y-3 shadow-sm">
                             <div>
-                                <h4 class="font-semibold text-indigo-900 text-sm" x-text="t.playAfter"></h4>
-                                <p class="text-xs text-indigo-700/80">Riverbero trattato: <span class="font-bold" x-text="avgRtTreated + ' s'"></span></p>
+                                <h4 class="font-bold text-sky-900 text-xs uppercase" x-text="t.playAfter"></h4>
+                                <p class="text-xs text-sky-700/80">Riverbero trattato: <span class="font-bold text-sky-900" x-text="avgRtTreated + ' s'"></span></p>
                             </div>
-                            <div class="flex items-center justify-between gap-1 h-10 px-2 bg-white/80 rounded border border-indigo-200">
+                            <div class="flex items-center justify-between gap-1 h-8 px-2 bg-white rounded border border-sky-200">
                                 <template x-for="i in 16">
-                                    <div class="w-1 bg-indigo-400 rounded-full transition-all duration-300" :style="isPlayingAfter ? `height: ${Math.max(8, Math.random() * 18)}px` : 'height: 6px'"></div>
+                                    <div class="w-1 bg-sky-500 rounded-full transition-all duration-300" :style="isPlayingAfter ? `height: ${Math.max(8, Math.random() * 16)}px` : 'height: 4px'"></div>
                                 </template>
                             </div>
-                            <button @click="playAudio('after')" :disabled="isPlayingBefore || isPlayingAfter" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition disabled:opacity-50 text-sm">
+                            <button @click="playAudio('after')" :disabled="isPlayingBefore || isPlayingAfter" class="w-full bg-sky-600 text-white py-2 rounded-lg font-bold hover:bg-sky-700 transition disabled:opacity-50 text-xs uppercase shadow-sm">
                                 <span x-text="isPlayingAfter ? 'Playing...' : t.playAfter"></span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- PDF Footer richiesto -->
+                <!-- PDF Footer -->
                 <div class="mt-8 pt-4 border-t text-center text-xs text-slate-500 space-y-1">
-                    <p class="font-semibold text-slate-700">seron GmbH srl</p>
-                    <p> Glurnserstr. 20 / Via Glorenza 20 — 39024 Malles Venosta/ Mals (BZ) Tel.+39473831059 WA 3701337526</p>
-                    <p class="text-blue-600 font-medium">www.eurokustik.com</p>
+                    <p class="font-bold text-slate-800">seron GmbH/srl</p>
+                    <p>Glurnserstr. 20 / Via Glorenza 20  — 39024 Mals / Malles Venosta (BZ) T.0473831059 WA.+393701337526 </p>
+                    <p class="text-sky-600 font-bold">www.eurokustik.com</p>
                 </div>
 
             </div>
@@ -392,8 +402,8 @@
                                     {
                                         label: 'T60 Attuale (s)',
                                         data: [...this.rtCurrentData],
-                                        borderColor: '#2563eb',
-                                        backgroundColor: 'rgba(37, 99, 235, 0.05)',
+                                        borderColor: '#0284c7',
+                                        backgroundColor: 'rgba(2, 132, 199, 0.05)',
                                         borderWidth: 2,
                                         tension: 0.3,
                                         fill: false
@@ -411,8 +421,8 @@
                                     {
                                         label: 'T60 Con Trattamento Scelto (s)',
                                         data: [...this.rtTreatedData],
-                                        borderColor: '#8b5cf6',
-                                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                                        borderColor: '#0f172a',
+                                        backgroundColor: 'rgba(15, 23, 42, 0.08)',
                                         borderWidth: 3,
                                         tension: 0.3,
                                         fill: true
