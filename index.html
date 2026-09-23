@@ -399,7 +399,6 @@
                     this.totalWallArea = parseFloat((perimeter * this.height).toFixed(1));
                     this.totalCeilingArea = parseFloat((this.length * this.width).toFixed(1));
                     
-                    // Default distribution
                     this.walls.putz = parseFloat((this.totalWallArea * 0.7).toFixed(1));
                     this.walls.glas = parseFloat((this.totalWallArea * 0.2).toFixed(1));
                     this.walls.beton = parseFloat((this.totalWallArea * 0.1).toFixed(1));
@@ -449,7 +448,7 @@
                 updatePercentage() {
                     const totalSurface = this.totalWallArea + this.totalCeilingArea;
                     this.coverageSquareMeters = parseFloat(((totalSurface * this.coveragePercentage) / 100).toFixed(1));
-                    this.calculate(); // <-- AGGIUNTO: richiama il calcolo e aggiorna il grafico
+                    this.calculate(); // Richiama il calcolo e aggiorna il grafico in tempo reale
                 },
 
                 calculate() {
@@ -478,7 +477,6 @@
 
                         optimizedRtList.push(0.50);
 
-                        // Trattamento con prodotto da catalogo in base ai m² percentuali
                         const productAlpha = productCoefficients[this.selectedProduct][f];
                         const treatedArea = Math.min(this.coverageSquareMeters, (this.totalWallArea + this.totalCeilingArea));
                         
