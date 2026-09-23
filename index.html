@@ -13,8 +13,17 @@
     <!-- html2pdf.js -->
     <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
     <style>
-        .ek-blue { background-color: #0f172a; }
-        .ek-accent { color: #0284c7; }
+        .ek-logo-box {
+            background-color: #262626;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-weight: 900;
+            color: #f8fafc;
+            letter-spacing: -0.05em;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 p-4 md:p-8 font-sans">
@@ -22,7 +31,7 @@
         <!-- Header & Language Switcher -->
         <header class="flex justify-between items-center bg-white p-5 rounded-xl shadow-sm border border-slate-200">
             <div class="flex items-center gap-3">
-                <div class="bg-slate-900 text-white font-extrabold text-xl px-3.5 py-1.5 rounded-lg tracking-wider">EK</div>
+                <div class="ek-logo-box text-xl px-3 py-1.5 shadow-sm">EK</div>
                 <div>
                     <h1 class="text-xl font-bold text-slate-900" x-text="t.title"></h1>
                     <p class="text-xs text-slate-500">Eurokustik Professional Acoustic Solutions</p>
@@ -151,10 +160,10 @@
             <!-- Results & Simulation Panel -->
             <div id="pdf-export-area" class="lg:col-span-2 space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                 
-                <!-- PDF Header con Logo EK -->
+                <!-- PDF Header con Logo EK personalizzato -->
                 <div class="flex justify-between items-center border-b pb-4">
                     <div class="flex items-center gap-3">
-                        <div class="bg-slate-900 text-white font-black text-2xl px-4 py-2 rounded-lg">EK</div>
+                        <div class="ek-logo-box text-2xl px-4 py-2">EK</div>
                         <div>
                             <h2 class="font-bold text-slate-900 text-base">Eurokustik - Acoustic Report</h2>
                             <p class="text-xs text-slate-500"><span x-text="projectName"></span> | <span x-text="customerName"></span></p>
@@ -246,7 +255,7 @@
                 <!-- PDF Footer -->
                 <div class="mt-8 pt-4 border-t text-center text-xs text-slate-500 space-y-1">
                     <p class="font-bold text-slate-800">seron GmbH/srl</p>
-                    <p>Glurnserstr. 20 / Via Glorenza 20  — 39024 Mals / Malles Venosta (BZ) T.0473831059 WA.+393701337526 </p>
+                    <p>Via Glorenza 20 / Glurnserstr. 20 — 39024 Malles / Mals (BZ)T.+39473831059 WA +393701337526</p>
                     <p class="text-sky-600 font-bold">www.eurokustik.com</p>
                 </div>
 
