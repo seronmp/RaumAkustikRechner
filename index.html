@@ -341,6 +341,7 @@
 
                 init() {
                     this.updateDimensions();
+                    this.updateChartFromManual(); // Calcola subito la media iniziale
                     this.$nextTick(() => {
                         const ctx = document.getElementById('acousticsChart').getContext('2d');
                         this.chart = new Chart(ctx, {
@@ -451,32 +452,22 @@
 
                 calculate() {
                     this.volume = parseFloat((this.length * this.width * this.height).toFixed(2));
-                    const floorArea = this.length * this.width;
-
+                    
                     const freqs = [125, 250, 500, 1000, 2000, 4000];
                     let treatedRtList = [];
                     let optimizedRtList = [];
 
-                    freqs.forEach((f) => {
-                        const aFloor = (absorptionCoefficients[this.floorMaterial] ? absorptionCoefficients[this.floorMaterial][f] : 0.03) * floorArea;
-                        
-                        const aCeilingBeton = absorptionCoefficients.beton[f] * (this.ceiling.beton || 0);
-                        const aCeilingHolz = absorptionCoefficients.holz[f] * (this.ceiling.holz || 0);
-                        
-                        const aGlas = absorptionCoefficients.glas[f] * (this.walls.glas || 0);
-                        const aPutz = absorptionCoefficients.putz[f] * (this.walls.putz || 0);
-                        const aHolz = absorptionCoefficients.holz[f] * (this.walls.holz || 0);
-                        const aBeton = absorptionCoefficients.beton[f] * (this.walls.beton || 0);
-
-                        const totalAbsorptionCurrent = aFloor + aCeilingBeton + aCeilingHolz + aGlas + aPutz + aHolz + aBeton + (0.16 * this.volume / 40);
-                        
+                    freqs.forEach((f, index) => {
                         optimizedRtList.push(0.50);
 
                         const productAlpha = productCoefficients[this.selectedProduct][f];
                         const treatedArea = Math.min(this.coverageSquareMeters, (this.totalWallArea + this.totalCeilingArea));
                         
-                        const effectiveAbsorptionTreated = totalAbsorptionCurrent + (productAlpha * treatedArea) - (0.04 * treatedArea);
-                        let rtTreated = (0.16 * this.volume) / Math.max(0.1, effectiveAbsorptionTreated);
+                        // Calcola l'abbassamento basato sul valore attuale inserito nei box manuali
+                        const currentVal = parseFloat(this.rtCurrentData[index]) || 1.5;
+                        let reductionFactor = 1 - (minMaxReduction(treatedArea, this.volume) * productAlpha);
+                        let rtTreated = currentVal * Math.max(0.2, reductionFactor);
+                        
                         treatedRtList.push(parseFloat(Math.max(0.1, rtTreated).toFixed(2)));
                     });
 
@@ -573,6 +564,11 @@
                     }
                 }
             }
+        }
+
+        function minMaxReduction(treatedArea, volume) {
+            let coefficient = (treatedArea / Math.max(10, volume)) * 0.45;
+            return Math.min(0.85, Math.max(0.05, coefficient));
         }
     </script>
 </body>
