@@ -481,16 +481,34 @@
                     const freqs = [125, 250, 500, 1000, 2000, 4000];
                     let treatedRtList = [];
                     let optimizedRtList = [];
+                    const floorArea = this.length * this.width;
 
                     freqs.forEach((f, index) => {
                         optimizedRtList.push(0.50);
 
+                        // Assorbimento base della stanza (A_room)
+                        const aFloor = floorArea * absorptionCoefficients[this.floorMaterial][f];
+                        const aWalls = 
+                            (this.walls.glas * absorptionCoefficients.glas[f]) +
+                            (this.walls.putz * absorptionCoefficients.putz[f]) +
+                            (this.walls.holz * absorptionCoefficients.holz[f]) +
+                            (this.walls.beton * absorptionCoefficients.beton[f]);
+                        const aCeiling = 
+                            (this.ceiling.beton * absorptionCoefficients.beton[f]) +
+                            (this.ceiling.holz * absorptionCoefficients.holz[f]);
+
+                        const roomAbsorption = aFloor + aWalls + aCeiling;
+
+                        // Assorbimento aggiunto dal trattamento acustico
                         const productAlpha = productCoefficients[this.selectedProduct][f];
-                        const treatedArea = Math.min(this.coverageSquareMeters, (this.totalWallArea + this.totalCeilingArea));
+                        const maxTreatableArea = this.totalWallArea + this.totalCeilingArea;
+                        const treatedArea = Math.min(this.coverageSquareMeters, maxTreatableArea);
                         
-                        const currentVal = parseFloat(this.rtCurrentData[index]) || 1.5;
-                        let reductionFactor = 1 - (minMaxReduction(treatedArea, this.volume) * productAlpha);
-                        let rtTreated = currentVal * Math.max(0.2, reductionFactor);
+                        const treatmentAbsorption = treatedArea * productAlpha;
+                        const totalTreatedAbsorption = roomAbsorption + treatmentAbsorption;
+
+                        // Ricalcolo T60 trattato con Sabine: T = 0.161 * V / A_totale
+                        let rtTreated = totalTreatedAbsorption > 0 ? (0.161 * this.volume) / totalTreatedAbsorption : 0.2;
                         
                         treatedRtList.push(parseFloat(Math.max(0.1, rtTreated).toFixed(2)));
                     });
@@ -588,11 +606,6 @@
                     }
                 }
             }
-        }
-
-        function minMaxReduction(treatedArea, volume) {
-            let coefficient = (treatedArea / Math.max(10, volume)) * 0.45;
-            return Math.min(0.85, Math.max(0.05, coefficient));
         }
     </script>
 </body>
