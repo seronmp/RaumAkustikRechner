@@ -2,7 +2,7 @@ import postgres from 'postgres';
 
 // La stringa di connessione Neon (in produzione andrebbe messa nelle Environment Variables di Vercel)
 const sql = postgres('postgres://neondb_owner:npg_TP6dAmIBV8tM@ep-fragrant-mouse-b2pj5k77-pooler.c-6.eu-central-1.aws.neon.tech/neondb?sslmode=require');
-
+const sql = postgres(process.env.DATABASE_URL, { ssl: 'require' });
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
