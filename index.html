@@ -413,10 +413,8 @@
 
                 onWallAreaChange(changedKey) {
                     let keys = ['glas', 'putz', 'holz', 'beton'];
-                    let sumOthers = 0;
                     let currentChangedVal = parseFloat(this.walls[changedKey]) || 0;
 
-                    // Clamp changed value
                     if (currentChangedVal < 0) currentChangedVal = 0;
                     if (currentChangedVal > this.totalWallArea) currentChangedVal = this.totalWallArea;
                     this.walls[changedKey] = currentChangedVal;
@@ -451,7 +449,7 @@
                 updatePercentage() {
                     const totalSurface = this.totalWallArea + this.totalCeilingArea;
                     this.coverageSquareMeters = parseFloat(((totalSurface * this.coveragePercentage) / 100).toFixed(1));
-                    this.calculate();
+                    this.calculate(); // <-- AGGIUNTO: richiama il calcolo e aggiorna il grafico
                 },
 
                 calculate() {
