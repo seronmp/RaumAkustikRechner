@@ -383,13 +383,11 @@
                                 maintainAspectRatio: false,
                                 scales: { 
                                     y: { 
-                                        beginAtZero: true, 
-                                        max: 3.5,
-                                        ticks: { stepSize: 0.5 }
-                                    } 
-                                }
-                            }
-                        });
+                                beginAtZero: true
+                                // Rimosso 'max: 3.5' e 'stepSize' per permettere al grafico di scalare automaticamente in base ai dati
+                        } 
+                    }
+                }
                     });
                 },
 
