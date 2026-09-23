@@ -348,7 +348,7 @@
                                 datasets: [
                                     {
                                         label: 'T60 Attuale (s)',
-                                        data: this.rtCurrentData,
+                                        data: [...this.rtCurrentData],
                                         borderColor: '#2563eb',
                                         backgroundColor: 'rgba(37, 99, 235, 0.05)',
                                         borderWidth: 2,
@@ -357,7 +357,7 @@
                                     },
                                     {
                                         label: 'T60 Obiettivo Ottimale (s)',
-                                        data: this.rtOptimizedData,
+                                        data: [...this.rtOptimizedData],
                                         borderColor: '#10b981',
                                         backgroundColor: 'rgba(16, 185, 129, 0.05)',
                                         borderWidth: 2,
@@ -367,7 +367,7 @@
                                     },
                                     {
                                         label: 'T60 Con Trattamento Scelto (s)',
-                                        data: this.rtTreatedData,
+                                        data: [...this.rtTreatedData],
                                         borderColor: '#8b5cf6',
                                         backgroundColor: 'rgba(139, 92, 246, 0.1)',
                                         borderWidth: 3,
@@ -486,7 +486,6 @@
                     freqs.forEach((f, index) => {
                         optimizedRtList.push(0.50);
 
-                        // Assorbimento base della stanza (A_room)
                         const aFloor = floorArea * absorptionCoefficients[this.floorMaterial][f];
                         const aWalls = 
                             (this.walls.glas * absorptionCoefficients.glas[f]) +
@@ -499,7 +498,6 @@
 
                         const roomAbsorption = aFloor + aWalls + aCeiling;
 
-                        // Assorbimento aggiunto dal trattamento acustico
                         const productAlpha = productCoefficients[this.selectedProduct][f];
                         const maxTreatableArea = this.totalWallArea + this.totalCeilingArea;
                         const treatedArea = Math.min(this.coverageSquareMeters, maxTreatableArea);
@@ -507,7 +505,6 @@
                         const treatmentAbsorption = treatedArea * productAlpha;
                         const totalTreatedAbsorption = roomAbsorption + treatmentAbsorption;
 
-                        // Ricalcolo T60 trattato con Sabine: T = 0.161 * V / A_totale
                         let rtTreated = totalTreatedAbsorption > 0 ? (0.161 * this.volume) / totalTreatedAbsorption : 0.2;
                         
                         treatedRtList.push(parseFloat(Math.max(0.1, rtTreated).toFixed(2)));
@@ -519,11 +516,12 @@
                     const sumTreated = treatedRtList.reduce((a, b) => a + b, 0);
                     this.avgRtTreated = parseFloat((sumTreated / treatedRtList.length).toFixed(2));
 
+                    // Aggiornamento corretto del grafico con pulizia dei proxy e ricalcolo assi
                     if (this.chart) {
-                        this.chart.data.datasets[0].data = [...this.rtCurrentData];
-                        this.chart.data.datasets[1].data = [...this.rtOptimizedData];
-                        this.chart.data.datasets[2].data = [...this.rtTreatedData];
-                        this.chart.update('none');
+                        this.chart.data.datasets[0].data = JSON.parse(JSON.stringify(this.rtCurrentData));
+                        this.chart.data.datasets[1].data = JSON.parse(JSON.stringify(this.rtOptimizedData));
+                        this.chart.data.datasets[2].data = JSON.parse(JSON.stringify(this.rtTreatedData));
+                        this.chart.update(); // Senza 'none' per forzare il ridimensionamento della scala y
                     }
                 },
 
