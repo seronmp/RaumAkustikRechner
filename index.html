@@ -68,41 +68,37 @@
                         <span class="text-xs text-slate-500" x-text="t.totalWalls + ': ' + totalWallArea + ' m²'"></span>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                            <span class="text-slate-600">Glas / Fenster (m²)</span>
-                            <input type="number" step="0.5" x-model.number="walls.glas" @input="onWallAreaChange('glas')" class="w-full mt-1 p-1.5 border rounded">
+                 <div class="grid grid-cols-2 gap-2 text-xs">
+                     <div>
+                       <span class="text-slate-600">Glas / Fenster (m²)</span>
+                     <input type="number" step="0.5" x-model.number="walls.glas" @input="onWallAreaChange('glas'); calculate()" class="w-full mt-1 p-1.5 border rounded">
                         </div>
                         <div>
                             <span class="text-slate-600">Putz (m²)</span>
-                            <input type="number" step="0.5" x-model.number="walls.putz" @input="onWallAreaChange('putz')" class="w-full mt-1 p-1.5 border rounded">
+                            <input type="number" step="0.5" x-model.number="walls.putz" @input="onWallAreaChange('putz'); calculate()" class="w-full mt-1 p-1.5 border rounded">
                         </div>
                         <div>
                             <span class="text-slate-600">Holz (m²)</span>
-                            <input type="number" step="0.5" x-model.number="walls.holz" @input="onWallAreaChange('holz')" class="w-full mt-1 p-1.5 border rounded">
+                            <input type="number" step="0.5" x-model.number="walls.holz" @input="onWallAreaChange('holz'); calculate()" class="w-full mt-1 p-1.5 border rounded">
                         </div>
                         <div>
                             <span class="text-slate-600">Beton (m²)</span>
-                            <input type="number" step="0.5" x-model.number="walls.beton" @input="onWallAreaChange('beton')" class="w-full mt-1 p-1.5 border rounded">
+                            <input type="number" step="0.5" x-model.number="walls.beton" @input="onWallAreaChange('beton'); calculate()" class="w-full mt-1 p-1.5 border rounded">
+                        </div>
+                    </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Ceiling Materials breakdown by m² -->
-                <div class="border-t pt-3 space-y-2">
-                    <div class="flex justify-between items-center">
-                        <label class="text-sm font-semibold text-slate-700" x-text="t.ceilingBreakdown"></label>
-                        <span class="text-xs text-slate-500" x-text="t.totalCeiling + ': ' + totalCeilingArea + ' m²'"></span>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2 text-xs">
+               div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
                             <span class="text-slate-600">Beton Decke (m²)</span>
-                            <input type="number" step="0.5" x-model.number="ceiling.beton" @input="onCeilingAreaChange('beton')" class="w-full mt-1 p-1.5 border rounded">
+                            <input type="number" step="0.5" x-model.number="ceiling.beton" @input="onCeilingAreaChange('beton'); calculate()" class="w-full mt-1 p-1.5 border rounded">
                         </div>
                         <div>
                             <span class="text-slate-600">Holz Decke (m²)</span>
-                            <input type="number" step="0.5" x-model.number="ceiling.holz" @input="onCeilingAreaChange('holz')" class="w-full mt-1 p-1.5 border rounded">
+                            <input type="number" step="0.5" x-model.number="ceiling.holz" @input="onCeilingAreaChange('holz'); calculate()" class="w-full mt-1 p-1.5 border rounded">
                         </div>
                     </div>
                 </div>
