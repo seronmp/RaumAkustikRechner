@@ -68,10 +68,10 @@
                         <span class="text-xs text-slate-500" x-text="t.totalWalls + ': ' + totalWallArea + ' m²'"></span>
                     </div>
                     
-                 <div class="grid grid-cols-2 gap-2 text-xs">
-                     <div>
-                       <span class="text-slate-600">Glas / Fenster (m²)</span>
-                     <input type="number" step="0.5" x-model.number="walls.glas" @input="onWallAreaChange('glas'); calculate()" class="w-full mt-1 p-1.5 border rounded">
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <span class="text-slate-600">Glas / Fenster (m²)</span>
+                            <input type="number" step="0.5" x-model.number="walls.glas" @input="onWallAreaChange('glas'); calculate()" class="w-full mt-1 p-1.5 border rounded">
                         </div>
                         <div>
                             <span class="text-slate-600">Putz (m²)</span>
@@ -86,12 +86,16 @@
                             <input type="number" step="0.5" x-model.number="walls.beton" @input="onWallAreaChange('beton'); calculate()" class="w-full mt-1 p-1.5 border rounded">
                         </div>
                     </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Ceiling Materials breakdown by m² -->
-               div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="border-t pt-3 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-sm font-semibold text-slate-700" x-text="t.ceilingBreakdown"></label>
+                        <span class="text-xs text-slate-500" x-text="t.totalCeiling + ': ' + totalCeilingArea + ' m²'"></span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
                             <span class="text-slate-600">Beton Decke (m²)</span>
                             <input type="number" step="0.5" x-model.number="ceiling.beton" @input="onCeilingAreaChange('beton'); calculate()" class="w-full mt-1 p-1.5 border rounded">
@@ -379,13 +383,12 @@
                                 maintainAspectRatio: false,
                                 scales: { 
                                     y: { 
-                                beginAtZero: true
-                                // Rimosso 'max: 3.5' e 'stepSize' per permettere al grafico di scalare automaticamente in base ai dati
-                        } 
-                    }
-                }
-            });
-        });
+                                        beginAtZero: true
+                                    } 
+                                }
+                            }
+                        });
+                    });
                 },
 
                 updateDimensions() {
@@ -446,72 +449,55 @@
                     this.calculate();
                 },
 
-         calculate() {
-    this.volume = parseFloat((this.length * this.width * this.height).toFixed(2));
-    const floorArea = this.length * this.width;
+                calculate() {
+                    this.volume = parseFloat((this.length * this.width * this.height).toFixed(2));
+                    const floorArea = this.length * this.width;
 
-    const freqs = [125, 250, 500, 1000, 2000, 4000];
-    let currentRtList = [...this.rtCurrentData]; // Mantiene i valori manuali se inseriti
-    let treatedRtList = [];
-    let optimizedRtList = [];
+                    const freqs = [125, 250, 500, 1000, 2000, 4000];
+                    let treatedRtList = [];
+                    let optimizedRtList = [];
 
-    freqs.forEach((f, index) => {
-        const aFloor = (absorptionCoefficients[this.floorMaterial] ? absorptionCoefficients[this.floorMaterial][f] : 0.03) * floorArea;
-        
-        const aCeilingBeton = absorptionCoefficients.beton[f] * (this.ceiling.beton || 0);
-        const aCeilingHolz = absorptionCoefficients.holz[f] * (this.ceiling.holz || 0);
-        
-        const aGlas = absorptionCoefficients.glas[f] * (this.walls.glas || 0);
-        const aPutz = absorptionCoefficients.putz[f] * (this.walls.putz || 0);
-        const aHolz = absorptionCoefficients.holz[f] * (this.walls.holz || 0);
-        const aBeton = absorptionCoefficients.beton[f] * (this.walls.beton || 0);
+                    freqs.forEach((f) => {
+                        const aFloor = (absorptionCoefficients[this.floorMaterial] ? absorptionCoefficients[this.floorMaterial][f] : 0.03) * floorArea;
+                        
+                        const aCeilingBeton = absorptionCoefficients.beton[f] * (this.ceiling.beton || 0);
+                        const aCeilingHolz = absorptionCoefficients.holz[f] * (this.ceiling.holz || 0);
+                        
+                        const aGlas = absorptionCoefficients.glas[f] * (this.walls.glas || 0);
+                        const aPutz = absorptionCoefficients.putz[f] * (this.walls.putz || 0);
+                        const aHolz = absorptionCoefficients.holz[f] * (this.walls.holz || 0);
+                        const aBeton = absorptionCoefficients.beton[f] * (this.walls.beton || 0);
 
-        const totalAbsorptionCurrent = aFloor + aCeilingBeton + aCeilingHolz + aGlas + aPutz + aHolz + aBeton + (0.16 * this.volume / 40);
-        
-        // Se non sono stati sovrascritti manualmente, calcola il teorico
-        let rtCurr = (0.16 * this.volume) / Math.max(0.1, totalAbsorptionCurrent);
-        
-        optimizedRtList.push(0.50);
+                        const totalAbsorptionCurrent = aFloor + aCeilingBeton + aCeilingHolz + aGlas + aPutz + aHolz + aBeton + (0.16 * this.volume / 40);
+                        
+                        optimizedRtList.push(0.50);
 
-        const productAlpha = productCoefficients[this.selectedProduct][f];
-        const treatedArea = Math.min(this.coverageSquareMeters, (this.totalWallArea + this.totalCeilingArea));
-        
-        const effectiveAbsorptionTreated = totalAbsorptionCurrent + (productAlpha * treatedArea) - (0.04 * treatedArea);
-        let rtTreated = (0.16 * this.volume) / Math.max(0.1, effectiveAbsorptionTreated);
-        treatedRtList.push(parseFloat(Math.max(0.1, rtTreated).toFixed(2)));
-    });
+                        const productAlpha = productCoefficients[this.selectedProduct][f];
+                        const treatedArea = Math.min(this.coverageSquareMeters, (this.totalWallArea + this.totalCeilingArea));
+                        
+                        const effectiveAbsorptionTreated = totalAbsorptionCurrent + (productAlpha * treatedArea) - (0.04 * treatedArea);
+                        let rtTreated = (0.16 * this.volume) / Math.max(0.1, effectiveAbsorptionTreated);
+                        treatedRtList.push(parseFloat(Math.max(0.1, rtTreated).toFixed(2)));
+                    });
 
-    this.rtOptimizedData = optimizedRtList;
-    this.rtTreatedData = treatedRtList;
-    
-    const sumTreated = treatedRtList.reduce((a, b) => a + b, 0);
-    this.avgRtTreated = parseFloat((sumTreated / treatedRtList.length).toFixed(2));
+                    this.rtOptimizedData = optimizedRtList;
+                    this.rtTreatedData = treatedRtList;
+                    
+                    const sumTreated = treatedRtList.reduce((a, b) => a + b, 0);
+                    this.avgRtTreated = parseFloat((sumTreated / treatedRtList.length).toFixed(2));
 
-    // AGGIORNAMENTO FORZATO DEL GRAFICO CHART.JS
-    if (this.chart) {
-        this.chart.data.datasets[0].data = [...this.rtCurrentData];
-        this.chart.data.datasets[1].data = [...this.rtOptimizedData];
-        this.chart.data.datasets[2].data = [...this.rtTreatedData];
-        this.chart.update('none'); // 'none' evita animazioni pesanti durante la digitazione
-    }
-},
-
-updateChartFromManual() {
-    const sum = this.rtCurrentData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
-    this.avgRtCurrent = parseFloat((sum / this.rtCurrentData.length).toFixed(2));
-    
-    // Ricalcola anche il trattato basandosi sui nuovi dati manuali attuali
-    this.calculate();
-}
+                    if (this.chart) {
+                        this.chart.data.datasets[0].data = [...this.rtCurrentData];
+                        this.chart.data.datasets[1].data = [...this.rtOptimizedData];
+                        this.chart.data.datasets[2].data = [...this.rtTreatedData];
+                        this.chart.update('none');
+                    }
                 },
 
                 updateChartFromManual() {
                     const sum = this.rtCurrentData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
                     this.avgRtCurrent = parseFloat((sum / this.rtCurrentData.length).toFixed(2));
-                    if (this.chart) {
-                        this.chart.data.datasets[0].data = this.rtCurrentData;
-                        this.chart.update();
-                    }
+                    this.calculate();
                 },
 
                 playAudio(type) {
