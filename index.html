@@ -139,8 +139,20 @@
                     </div>
                 </div>
 
-                <button @click="saveProject" class="w-full bg-slate-900 text-white p-3 rounded-lg font-semibold hover:bg-slate-800 transition text-sm shadow-sm" x-text="t.saveBtn"></button>
-                <button @click="downloadPDF" class="w-full bg-sky-600 text-white p-3 rounded-lg font-semibold hover:bg-sky-700 transition text-sm shadow-sm mt-2" x-text="t.downloadPdf"></button>
+                <!-- Action Buttons -->
+                <div class="space-y-2 pt-2">
+                    <button @click="saveProject" class="w-full bg-slate-900 text-white p-3 rounded-lg font-semibold hover:bg-slate-800 transition text-sm shadow-sm" x-text="t.saveBtn"></button>
+                    <button @click="downloadPDF" class="w-full bg-sky-600 text-white p-3 rounded-lg font-semibold hover:bg-sky-700 transition text-sm shadow-sm" x-text="t.downloadPdf"></button>
+                    
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button @click="shareWhatsApp" class="w-full bg-emerald-600 text-white p-2.5 rounded-lg font-semibold hover:bg-emerald-700 transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
+                            <span>💬 WhatsApp</span>
+                        </button>
+                        <button @click="shareEmail" class="w-full bg-amber-600 text-white p-2.5 rounded-lg font-semibold hover:bg-amber-700 transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
+                            <span>✉️ Email</span>
+                        </button>
+                    </div>
+                </div>
                 <p x-text="saveStatus" class="text-xs text-center font-medium mt-2 text-slate-600"></p>
             </div>
 
@@ -630,6 +642,34 @@
                         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     };
                     html2pdf().from(element).set(opt).save();
+                },
+
+                shareWhatsApp() {
+                    const text = encodeURIComponent(
+                        `*Eurokustik - Report Acustico*\n` +
+                        `📁 Progetto: ${this.projectName}\n` +
+                        `👤 Cliente: ${this.customerName}\n` +
+                        `📐 Volume: ${this.volume} m³\n` +
+                        `⏱️ Riverbero Attuale: ${this.avgRtCurrent}s\n` +
+                        `⏱️ Riverbero Trattato: ${this.avgRtTreated}s\n` +
+                        `🌐 www.eurokustik.com`
+                    );
+                    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+                },
+
+                shareEmail() {
+                    const subject = encodeURIComponent(`Report Acustico - ${this.projectName}`);
+                    const body = encodeURIComponent(
+                        `Gentile ${this.customerName},\n\n` +
+                        `Di seguito i dati del calcolo acustico per il progetto "${this.projectName}":\n\n` +
+                        `- Volume Stanza: ${this.volume} m³\n` +
+                        `- Tempo di Riverbero Attuale (T60): ${this.avgRtCurrent} s\n` +
+                        `- Tempo di Riverbero Previsto con Trattamento: ${this.avgRtTreated} s\n\n` +
+                        `Cordiali saluti,\n` +
+                        `Eurokustik / seron srl\n` +
+                        `www.eurokustik.com`
+                    );
+                    window.location.href = `mailto:?subject=${subject}&body=${body}`;
                 },
 
                 async saveProject() {
