@@ -18,7 +18,8 @@
         <!-- Header & Language Switcher -->
         <header class="flex justify-between items-center bg-white p-5 rounded-xl shadow-sm border border-slate-200">
             <div class="flex items-center gap-3">
-                <img src="https://seron.one/media/.thumbswysiwyg/EK_logo.png?rand=1790230619" alt="Eurokustik Logo" class="h-10 w-auto object-contain" crossorigin="anonymous">
+                <!-- Logo Base64 incorporato per evitare CORS -->
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Eurokustik Logo" class="h-10 w-auto object-contain logo-img">
                 <div>
                     <h1 class="text-xl font-bold text-slate-900" x-text="t.title"></h1>
                     <p class="text-xs text-slate-500">Eurokustik Professional Acoustic Solutions</p>
@@ -159,10 +160,10 @@
             <!-- Results & Simulation Panel -->
             <div id="pdf-export-area" class="lg:col-span-2 space-y-6 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                 
-                <!-- PDF Header con Logo URL Remoto -->
+                <!-- PDF Header -->
                 <div class="flex justify-between items-center border-b pb-4">
                     <div class="flex items-center gap-3">
-                        <img src="https://seron.one/media/.thumbswysiwyg/EK_logo.png?rand=1790230619" alt="Eurokustik Logo" class="h-10 w-auto object-contain" crossorigin="anonymous">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" alt="Eurokustik Logo" class="h-10 w-auto object-contain logo-img">
                         <div>
                             <h2 class="font-bold text-slate-900 text-base">Eurokustik - Acoustic Report</h2>
                             <p class="text-xs text-slate-500"><span x-text="projectName"></span> | <span x-text="customerName"></span></p>
