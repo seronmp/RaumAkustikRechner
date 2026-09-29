@@ -1,24 +1,19 @@
-<!DOCTYPE html>
-<html lang="de" x-data="acousticsApp()">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raumakustik Rechner | Eurokustik</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- Chart.js -->
+<div class="seron-acoustics-app" x-data="acousticsApp()" x-cloak>
+    <style>
+        [x-cloak] { display: none !important; }
+        .seron-acoustics-app { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1e293b; background: #f8fafc; padding: 12px; border-radius: 12px; }
+        .seron-acoustics-app input, .seron-acoustics-app select { background-color: #ffffff !important; color: #1e293b !important; }
+    </style>
+
+    <!-- CDN Stabili -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- html2pdf.js -->
     <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
-</head>
-<body class="bg-slate-100 text-slate-800 p-4 md:p-8 font-sans">
+
     <div class="max-w-7xl mx-auto space-y-6">
-        <!-- Header & Language Switcher -->
+        <!-- Header -->
         <header class="flex justify-between items-center bg-white p-5 rounded-xl shadow-sm border border-slate-200">
             <div class="flex items-center gap-3">
-                <!-- Logo Vettoriale EUROKUSTIK Corretto -->
                 <svg class="h-8 w-auto text-slate-900" viewBox="0 0 220 32" fill="currentColor">
                     <text x="0" y="24" font-family="sans-serif" font-weight="900" font-size="24" letter-spacing="2">EUROKUSTIK</text>
                 </svg>
@@ -28,13 +23,15 @@
                 </div>
             </div>
             <div class="flex gap-2">
-                <button @click="lang = 'de'" :class="lang === 'de' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700'" class="px-3 py-1 rounded-md font-semibold text-xs transition">DE</button>
-                <button @click="lang = 'ita'" :class="lang === 'ita' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700'" class="px-3 py-1 rounded-md font-semibold text-xs transition">ITA</button>
+                <button type="button" @click="lang = 'de'" :class="lang === 'de' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700'" class="px-3 py-1 rounded-md font-semibold text-xs transition">DE</button>
+                <button type="button" @click="lang = 'ita'" :class="lang === 'ita' ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-700'" class="px-3 py-1 rounded-md font-semibold text-xs transition">ITA</button>
             </div>
         </header>
 
+        <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Inputs Panel -->
+            
+            <!-- Pannello di Sinistra: Input e Parametri -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 lg:col-span-1 space-y-5">
                 <h2 class="text-md font-bold text-slate-900 border-b pb-2 uppercase tracking-wide" x-text="t.params"></h2>
                 
@@ -46,6 +43,11 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase" x-text="t.customerName"></label>
                     <input type="text" x-model="customerName" class="w-full mt-1 p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase" x-text="t.customerEmail"></label>
+                    <input type="email" x-model="customerEmail" placeholder="cliente@email.com" class="w-full mt-1 p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:outline-none">
                 </div>
 
                 <div class="grid grid-cols-3 gap-2">
@@ -65,66 +67,63 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase" x-text="t.floor"></label>
-                    <select x-model="floorMaterial" @change="updateDimensions" class="w-full mt-1 p-2.5 text-sm border border-slate-300 rounded-lg bg-white">
-                        <option value="parket">Parkett / Wooden Floor (0.05)</option>
-                        <option value="beton">Beton / Concrete (0.02)</option>
-                        <option value="teppich">Teppich / Carpet (0.25)</option>
+                    <select x-model="floorMaterial" @change="updateDimensions" class="w-full mt-1 p-2.5 text-sm border border-slate-300 rounded-lg">
+                        <option value="parket" x-text="t.floors.parket"></option>
+                        <option value="beton" x-text="t.floors.beton"></option>
+                        <option value="teppich" x-text="t.floors.teppich"></option>
                     </select>
                 </div>
 
-                <!-- Wall Materials breakdown -->
+                <!-- Wandmaterialien / Materiale Pareti -->
                 <div class="border-t pt-4 space-y-3">
                     <div class="flex justify-between items-center">
                         <label class="text-xs font-bold text-slate-700 uppercase" x-text="t.wallsBreakdown"></label>
                         <span class="text-xs font-semibold text-slate-500" x-text="t.totalWalls + ': ' + totalWallArea + ' m²'"></span>
                     </div>
-                    
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                            <span class="text-slate-600 font-medium">Glas / Fenster (m²)</span>
+                            <span class="text-slate-600 font-medium" x-text="t.materials.glas"></span>
                             <input type="number" step="0.5" x-model.number="walls.glas" @input="onWallAreaChange('glas')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                         <div>
-                            <span class="text-slate-600 font-medium">Putz (m²)</span>
+                            <span class="text-slate-600 font-medium" x-text="t.materials.putz"></span>
                             <input type="number" step="0.5" x-model.number="walls.putz" @input="onWallAreaChange('putz')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                         <div>
-                            <span class="text-slate-600 font-medium">Holz (m²)</span>
+                            <span class="text-slate-600 font-medium" x-text="t.materials.holz"></span>
                             <input type="number" step="0.5" x-model.number="walls.holz" @input="onWallAreaChange('holz')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                         <div>
-                            <span class="text-slate-600 font-medium">Beton (m²)</span>
+                            <span class="text-slate-600 font-medium" x-text="t.materials.beton"></span>
                             <input type="number" step="0.5" x-model.number="walls.beton" @input="onWallAreaChange('beton')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                     </div>
                 </div>
 
-                <!-- Ceiling Materials breakdown -->
+                <!-- Deckenmaterialien / Materiale Soffitto -->
                 <div class="border-t pt-4 space-y-3">
                     <div class="flex justify-between items-center">
                         <label class="text-xs font-bold text-slate-700 uppercase" x-text="t.ceilingBreakdown"></label>
                         <span class="text-xs font-semibold text-slate-500" x-text="t.totalCeiling + ': ' + totalCeilingArea + ' m²'"></span>
                     </div>
-                    
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                            <span class="text-slate-600 font-medium">Beton Decke (m²)</span>
+                            <span class="text-slate-600 font-medium" x-text="t.materials.betonDecke"></span>
                             <input type="number" step="0.5" x-model.number="ceiling.beton" @input="onCeilingAreaChange('beton')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                         <div>
-                            <span class="text-slate-600 font-medium">Holz Decke (m²)</span>
+                            <span class="text-slate-600 font-medium" x-text="t.materials.holzDecke"></span>
                             <input type="number" step="0.5" x-model.number="ceiling.holz" @input="onCeilingAreaChange('holz')" class="w-full mt-1 p-2 border border-slate-300 rounded-md">
                         </div>
                     </div>
                 </div>
 
-                <!-- Treatment Configuration -->
+                <!-- Trattamento -->
                 <div class="border-t pt-4 space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wide" x-text="t.treatmentTitle"></h3>
-                    
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1" x-text="t.productSelect"></label>
-                        <select x-model="selectedProduct" @change="calculate" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white font-medium">
+                        <select x-model="selectedProduct" @change="calculate" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm font-medium">
                             <option value="melamina" x-text="t.products.melamina"></option>
                             <option value="poliuretano" x-text="t.products.poliuretano"></option>
                             <option value="stratocell" x-text="t.products.stratocell"></option>
@@ -132,7 +131,6 @@
                             <option value="fibrotech" x-text="t.products.fibrotech"></option>
                         </select>
                     </div>
-
                     <div>
                         <div class="flex justify-between items-center text-xs font-semibold mb-1">
                             <span class="text-slate-600" x-text="t.treatmentPercentage"></span>
@@ -142,34 +140,25 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons & Privacy Checkbox -->
+                <!-- Azioni & Privacy -->
                 <div class="space-y-3 pt-2 border-t">
-                    <!-- Privacy Checkbox -->
                     <div class="flex items-start gap-2 pt-1">
-                        <input type="checkbox" id="privacyCheck" x-model="privacyAccepted" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer">
+                        <input type="checkbox" id="privacyCheck" x-model="privacyAccepted" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 cursor-pointer">
                         <label for="privacyCheck" class="text-[11px] text-slate-600 leading-tight cursor-pointer" x-text="t.privacyText"></label>
                     </div>
-
-                    <button @click="saveProject" :disabled="!privacyAccepted" class="w-full bg-slate-900 text-white p-3 rounded-lg font-semibold hover:bg-slate-800 transition text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" x-text="t.saveBtn"></button>
-                    
-                    <button @click="downloadPDF" class="w-full bg-sky-600 text-white p-3 rounded-lg font-semibold hover:bg-sky-700 transition text-sm shadow-sm" x-text="t.downloadPdf"></button>
-                    
+                    <button type="button" @click="saveAndSendEmail" :disabled="!privacyAccepted" class="w-full bg-slate-900 text-white p-3 rounded-lg font-semibold hover:bg-slate-800 transition text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" x-text="t.saveBtn"></button>
+                    <button type="button" @click="downloadPDF" class="w-full bg-sky-600 text-white p-3 rounded-lg font-semibold hover:bg-sky-700 transition text-sm shadow-sm" x-text="t.downloadPdf"></button>
                     <div class="grid grid-cols-2 gap-2 pt-1">
-                        <button @click="shareWhatsApp" class="w-full bg-emerald-600 text-white p-2.5 rounded-lg font-semibold hover:bg-emerald-700 transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
-                            <span>💬 WhatsApp</span>
-                        </button>
-                        <button @click="shareEmail" class="w-full bg-amber-600 text-white p-2.5 rounded-lg font-semibold hover:bg-amber-700 transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
-                            <span>✉️ Email</span>
-                        </button>
+                        <button type="button" @click="shareWhatsApp" class="w-full bg-emerald-600 text-white p-2.5 rounded-lg font-semibold hover:bg-emerald-700 transition text-xs flex items-center justify-center gap-1.5 shadow-sm">WhatsApp</button>
+                        <button type="button" @click="shareEmail" class="w-full bg-amber-600 text-white p-2.5 rounded-lg font-semibold hover:bg-amber-700 transition text-xs flex items-center justify-center gap-1.5 shadow-sm">Email</button>
                     </div>
                 </div>
                 <p x-text="saveStatus" class="text-xs text-center font-medium mt-2 text-slate-600"></p>
             </div>
 
-            <!-- Results & Simulation Panel -->
+            <!-- Pannello di Destra: Risultati, Grafico e Simulazione -->
             <div id="pdf-export-area" class="lg:col-span-2 space-y-4 bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-xs">
                 
-                <!-- PDF Header -->
                 <div class="flex justify-between items-center border-b pb-3">
                     <div class="flex items-center gap-3">
                         <svg class="h-6 w-auto text-slate-900" viewBox="0 0 220 32" fill="currentColor">
@@ -180,12 +169,10 @@
                             <p class="text-[10px] text-slate-500"><span x-text="projectName"></span> | <span x-text="customerName"></span></p>
                         </div>
                     </div>
-                    <div class="text-right text-[10px] font-bold text-sky-600">
-                        www.eurokustik.com
-                    </div>
+                    <div class="text-right text-[10px] font-bold text-sky-600">www.eurokustik.com</div>
                 </div>
 
-                <!-- Metrics Cards -->
+                <!-- KPI Cards -->
                 <div class="grid grid-cols-3 gap-3">
                     <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                         <h3 class="text-[10px] font-bold text-slate-500 uppercase" x-text="t.volume"></h3>
@@ -201,7 +188,7 @@
                     </div>
                 </div>
 
-                <!-- Manual Sound Level Meter Overrides -->
+                <!-- Overrides Manuali -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <h3 class="text-xs font-bold text-slate-900 uppercase mb-0.5" x-text="t.manualTitle"></h3>
                     <p class="text-[10px] text-slate-500 mb-2" x-text="t.manualDesc"></p>
@@ -209,63 +196,49 @@
                         <template x-for="(freq, index) in frequencies" :key="freq">
                             <div>
                                 <label class="block text-[10px] font-bold text-center text-slate-600 mb-1" x-text="freq"></label>
-                                <input type="number" step="0.05" x-model.number="rtCurrentData[index]" @input="updateChartFromManual" class="w-full p-1.5 text-center text-xs font-semibold border border-slate-300 rounded bg-white">
+                                <input type="number" step="0.05" x-model.number="rtCurrentData[index]" @input="updateChartFromManual" class="w-full p-1.5 text-center text-xs font-semibold border border-slate-300 rounded">
                             </div>
                         </template>
                     </div>
                 </div>
 
-                <!-- Chart Container (Grafico grande h-96) -->
+                <!-- Grafico Chart.js -->
                 <div class="bg-white p-4 rounded-lg border border-slate-200">
                     <h3 class="text-xs font-bold text-slate-900 uppercase mb-3" x-text="t.chartTitle"></h3>
-                    <div class="relative h-96">
+                    <div class="relative w-full h-[320px]">
                         <canvas id="acousticsChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Audio Simulation Panel -->
+                <!-- Audio Simulation -->
                 <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-3">
                     <div>
                         <h3 class="text-xs font-bold text-slate-900 uppercase" x-text="t.audioTitle"></h3>
                         <p class="text-[10px] text-slate-500" x-text="t.audioDesc"></p>
                     </div>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <!-- Before Widget -->
-                        <div class="p-3 border border-slate-200 rounded-lg bg-white flex flex-col justify-between space-y-2 shadow-sm">
+                        <div class="p-3 border border-slate-200 rounded-lg bg-white flex flex-col justify-between space-y-2">
                             <div>
                                 <h4 class="font-bold text-slate-800 text-[10px] uppercase" x-text="t.playBefore"></h4>
-                                <p class="text-[10px] text-slate-500">Riverbero stimato: <span class="font-bold text-slate-800" x-text="avgRtCurrent + ' s'"></span></p>
+                                <p class="text-[10px] text-slate-500">Riverbero: <span class="font-bold text-slate-800" x-text="avgRtCurrent + ' s'"></span></p>
                             </div>
-                            <div class="flex items-center justify-between gap-1 h-6 px-2 bg-slate-100 rounded border border-slate-200">
-                                <template x-for="i in 16">
-                                    <div class="w-0.5 bg-slate-400 rounded-full transition-all duration-350" :style="isPlayingBefore ? `height: ${Math.max(8, Math.random() * 16)}px` : 'height: 3px'"></div>
-                                </template>
-                            </div>
-                            <button @click="playAudio('before')" :disabled="isPlayingBefore || isPlayingAfter" class="w-full bg-slate-200 text-slate-800 py-2 rounded font-bold hover:bg-slate-300 transition disabled:opacity-50 text-[10px] uppercase">
+                            <button type="button" @click="playAudio('before')" :disabled="isPlayingBefore || isPlayingAfter" class="w-full bg-slate-200 text-slate-800 py-2 rounded font-bold hover:bg-slate-300 transition text-[10px] uppercase">
                                 <span x-text="isPlayingBefore ? 'Playing...' : t.playBefore"></span>
                             </button>
                         </div>
-
-                        <!-- After Widget -->
-                        <div class="p-3 border border-sky-100 rounded-lg bg-sky-50/50 flex flex-col justify-between space-y-2 shadow-sm">
+                        <div class="p-3 border border-sky-100 rounded-lg bg-sky-50/50 flex flex-col justify-between space-y-2">
                             <div>
                                 <h4 class="font-bold text-sky-900 text-[10px] uppercase" x-text="t.playAfter"></h4>
-                                <p class="text-[10px] text-sky-700/80">Riverbero trattato: <span class="font-bold text-sky-900" x-text="avgRtTreated + ' s'"></span></p>
+                                <p class="text-[10px] text-sky-700">Riverbero: <span class="font-bold text-sky-900" x-text="avgRtTreated + ' s'"></span></p>
                             </div>
-                            <div class="flex items-center justify-between gap-1 h-6 px-2 bg-white rounded border border-sky-200">
-                                <template x-for="i in 16">
-                                    <div class="w-0.5 bg-sky-500 rounded-full transition-all duration-350" :style="isPlayingAfter ? `height: ${Math.max(6, Math.random() * 12)}px` : 'height: 3px'"></div>
-                                </template>
-                            </div>
-                            <button @click="playAudio('after')" :disabled="isPlayingBefore || isPlayingAfter" class="w-full bg-sky-600 text-white py-2 rounded font-bold hover:bg-sky-700 transition disabled:opacity-50 text-[10px] uppercase shadow-sm">
+                            <button type="button" @click="playAudio('after')" :disabled="isPlayingBefore || isPlayingAfter" class="w-full bg-sky-600 text-white py-2 rounded font-bold hover:bg-sky-700 transition text-[10px] uppercase shadow-sm">
                                 <span x-text="isPlayingAfter ? 'Playing...' : t.playAfter"></span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- PDF Footer -->
+                <!-- Footer PDF -->
                 <div class="mt-4 pt-3 border-t text-center text-[10px] text-slate-500 space-y-0.5">
                     <p class="font-bold text-slate-800">seron GmbH/srl</p>
                     <p>Via Glorenza 20 / Glurnserstr. 20 — 39024 Malles / Mals (BZ) T. +39 473 831059 WA +39 370 1337526</p>
@@ -275,10 +248,14 @@
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        const translations = {
-            de: {
+<!-- Alpine.js script -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+<script>
+    const translations = {
+        de: {
             title: "Raumakustik & Nachhallzeit Rechner",
             params: "Raumparameter",
             projectName: "Projektname",
@@ -328,383 +305,376 @@
                 stratocell: "Stratocell Whisper (5 cm)",
                 poliestere: "Polyesterfaser (5 cm)",
                 fibrotech: "FibroTech Akustikpaneele"
-                }
             }
-        };
-
-        const absorptionCoefficients = {
-            parket: { 125: 0.04, 250: 0.04, 500: 0.03, 1000: 0.03, 2000: 0.02, 4000: 0.02 },
-            beton: { 125: 0.01, 250: 0.01, 500: 0.02, 1000: 0.02, 2000: 0.03, 4000: 0.04 },
-            teppich: { 125: 0.02, 250: 0.08, 500: 0.25, 1000: 0.45, 2000: 0.65, 4000: 0.75 },
-            glas: { 125: 0.10, 250: 0.05, 500: 0.03, 1000: 0.02, 2000: 0.02, 4000: 0.02 },
-            putz: { 125: 0.02, 250: 0.03, 500: 0.04, 1000: 0.05, 2000: 0.04, 4000: 0.03 },
-            holz: { 125: 0.15, 250: 0.12, 500: 0.10, 1000: 0.08, 2000: 0.07, 4000: 0.06 }
-        };
-
-        const productCoefficients = {
-            melamina: { 125: 0.15, 250: 0.45, 500: 0.85, 1000: 0.95, 2000: 0.95, 4000: 0.90 },
-            poliuretano: { 125: 0.12, 250: 0.35, 500: 0.75, 1000: 0.85, 2000: 0.80, 4000: 0.75 },
-            stratocell: { 125: 0.20, 250: 0.55, 500: 0.90, 1000: 0.95, 2000: 0.90, 4000: 0.85 },
-            poliestere: { 125: 0.18, 250: 0.50, 500: 0.88, 1000: 0.92, 2000: 0.88, 4000: 0.82 },
-            fibrotech: { 125: 0.10, 250: 0.30, 500: 0.75, 1000: 0.90, 2000: 0.80, 4000: 0.70 }
-        };
-
-        function acousticsApp() {
-            let chartInstance = null;
-
-            return {
-                lang: 'ita',
-                projectName: 'Ufficio Seron',
-                customerName: 'Cliente Test',
-                length: 6.0,
-                width: 4.0,
-                height: 2.8,
-                floorMaterial: 'parket',
-                walls: {
-                    glas: 6.0,
-                    putz: 30.0,
-                    holz: 0.0,
-                    beton: 4.0
-                },
-                ceiling: {
-                    beton: 24.0,
-                    holz: 0.0
-                },
-                selectedProduct: 'melamina',
-                coveragePercentage: 35,
-                coverageSquareMeters: 14.0,
-                volume: 67.2,
-                totalWallArea: 40.0,
-                totalCeilingArea: 24.0,
-                avgRtCurrent: 0.0,
-                avgRtTreated: 0.0,
-                rtCurrentData: [1.8, 2.1, 1.9, 1.6, 1.3, 1.0],
-                rtOptimizedData: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-                rtTreatedData: [1.2, 1.3, 1.0, 0.8, 0.7, 0.6],
-                privacyAccepted: false,
-                saveStatus: '',
-                frequencies: ['125 Hz', '250 Hz', '500 Hz', '1000 Hz', '2000 Hz', '4000 Hz'],
-                isPlayingBefore: false,
-                isPlayingAfter: false,
-
-                get t() { return translations[this.lang]; },
-
-                init() {
-                    this.updateDimensions();
-                    this.$nextTick(() => {
-                        const ctx = document.getElementById('acousticsChart').getContext('2d');
-                        chartInstance = new Chart(ctx, {
-                            type: 'line',
-                            data: {
-                                labels: this.frequencies,
-                                datasets: [
-                                    {
-                                        label: 'T60 Attuale (s)',
-                                        data: [...this.rtCurrentData],
-                                        borderColor: '#0284c7',
-                                        backgroundColor: 'rgba(2, 132, 199, 0.05)',
-                                        borderWidth: 2,
-                                        tension: 0.3,
-                                        fill: false
-                                    },
-                                    {
-                                        label: 'T60 Obiettivo Ottimale (s)',
-                                        data: [...this.rtOptimizedData],
-                                        borderColor: '#10b981',
-                                        backgroundColor: 'rgba(16, 185, 129, 0.05)',
-                                        borderWidth: 2,
-                                        borderDash: [5, 5],
-                                        tension: 0.3,
-                                        fill: false
-                                    },
-                                    {
-                                        label: 'T60 Con Trattamento Scelto (s)',
-                                        data: [...this.rtTreatedData],
-                                        borderColor: '#0f172a',
-                                        backgroundColor: 'rgba(15, 23, 42, 0.08)',
-                                        borderWidth: 3,
-                                        tension: 0.3,
-                                        fill: true
-                                    }
-                                ]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: { 
-                                    y: { 
-                                        beginAtZero: true
-                                    } 
-                                },
-                                plugins: {
-                                    legend: {
-                                        labels: {
-                                            boxWidth: 12,
-                                            font: { size: 10 }
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    });
-                },
-
-                updateDimensions() {
-                    this.volume = parseFloat((this.length * this.width * this.height).toFixed(2));
-                    const perimeter = 2 * (this.length + this.width);
-                    this.totalWallArea = parseFloat((perimeter * this.height).toFixed(1));
-                    this.totalCeilingArea = parseFloat((this.length * this.width).toFixed(1));
-                    
-                    this.walls.putz = parseFloat((this.totalWallArea * 0.7).toFixed(1));
-                    this.walls.glas = parseFloat((this.totalWallArea * 0.2).toFixed(1));
-                    this.walls.beton = parseFloat((this.totalWallArea * 0.1).toFixed(1));
-                    this.walls.holz = 0.0;
-
-                    this.ceiling.beton = this.totalCeilingArea;
-                    this.ceiling.holz = 0.0;
-
-                    this.calculateCurrentRtFromGeometry();
-                    this.updatePercentage();
-                },
-
-                calculateCurrentRtFromGeometry() {
-                    const freqs = [125, 250, 500, 1000, 2000, 4000];
-                    const floorArea = this.length * this.width;
-
-                    freqs.forEach((f, index) => {
-                        const aFloor = floorArea * absorptionCoefficients[this.floorMaterial][f];
-                        const aWalls = 
-                            (this.walls.glas * absorptionCoefficients.glas[f]) +
-                            (this.walls.putz * absorptionCoefficients.putz[f]) +
-                            (this.walls.holz * absorptionCoefficients.holz[f]) +
-                            (this.walls.beton * absorptionCoefficients.beton[f]);
-                        const aCeiling = 
-                            (this.ceiling.beton * absorptionCoefficients.beton[f]) +
-                            (this.ceiling.holz * absorptionCoefficients.holz[f]);
-
-                        const totalAbsorption = aFloor + aWalls + aCeiling;
-                        let calculatedT60 = totalAbsorption > 0 ? (0.161 * this.volume) / totalAbsorption : 2.0;
-                        this.rtCurrentData[index] = parseFloat(Math.min(5.0, Math.max(0.2, calculatedT60)).toFixed(2));
-                    });
-
-                    const sum = this.rtCurrentData.reduce((a, b) => a + b, 0);
-                    this.avgRtCurrent = parseFloat((sum / this.rtCurrentData.length).toFixed(2));
-                },
-
-                onWallAreaChange(changedKey) {
-                    let keys = ['glas', 'putz', 'holz', 'beton'];
-                    let currentChangedVal = parseFloat(this.walls[changedKey]) || 0;
-
-                    if (currentChangedVal < 0) currentChangedVal = 0;
-                    if (currentChangedVal > this.totalWallArea) currentChangedVal = this.totalWallArea;
-                    this.walls[changedKey] = currentChangedVal;
-
-                    let remainingArea = this.totalWallArea - currentChangedVal;
-                    let otherKeys = keys.filter(k => k !== changedKey);
-                    let currentSumOthers = otherKeys.reduce((acc, k) => acc + (parseFloat(this.walls[k]) || 0), 0);
-
-                    if (currentSumOthers > 0) {
-                        otherKeys.forEach(k => {
-                            let ratio = (parseFloat(this.walls[k]) || 0) / currentSumOthers;
-                            this.walls[k] = parseFloat((remainingArea * ratio).toFixed(1));
-                        });
-                    } else if (otherKeys.length > 0) {
-                        let splitVal = parseFloat((remainingArea / otherKeys.length).toFixed(1));
-                        otherKeys.forEach(k => { this.walls[k] = splitVal; });
-                    }
-
-                    this.calculateCurrentRtFromGeometry();
-                    this.updatePercentage();
-                },
-
-                onCeilingAreaChange(changedKey) {
-                    let otherKey = changedKey === 'beton' ? 'holz' : 'beton';
-                    let val = parseFloat(this.ceiling[changedKey]) || 0;
-                    if (val < 0) val = 0;
-                    if (val > this.totalCeilingArea) val = this.totalCeilingArea;
-                    this.ceiling[changedKey] = val;
-                    this.ceiling[otherKey] = parseFloat((this.totalCeilingArea - val).toFixed(1));
-                    
-                    this.calculateCurrentRtFromGeometry();
-                    this.updatePercentage();
-                },
-
-                updatePercentage() {
-                    const totalSurface = this.totalWallArea + this.totalCeilingArea;
-                    this.coverageSquareMeters = parseFloat(((totalSurface * this.coveragePercentage) / 100).toFixed(1));
-                    this.calculate();
-                },
-
-                calculate() {
-                    this.volume = parseFloat((this.length * this.width * this.height).toFixed(2));
-                    
-                    const freqs = [125, 250, 500, 1000, 2000, 4000];
-                    let treatedRtList = [];
-                    let optimizedRtList = [];
-                    const floorArea = this.length * this.width;
-
-                    freqs.forEach((f, index) => {
-                        optimizedRtList.push(0.50);
-
-                        const aFloor = floorArea * absorptionCoefficients[this.floorMaterial][f];
-                        const aWalls = 
-                            (this.walls.glas * absorptionCoefficients.glas[f]) +
-                            (this.walls.putz * absorptionCoefficients.putz[f]) +
-                            (this.walls.holz * absorptionCoefficients.holz[f]) +
-                            (this.walls.beton * absorptionCoefficients.beton[f]);
-                        const aCeiling = 
-                            (this.ceiling.beton * absorptionCoefficients.beton[f]) +
-                            (this.ceiling.holz * absorptionCoefficients.holz[f]);
-
-                        const roomAbsorption = aFloor + aWalls + aCeiling;
-
-                        const productAlpha = productCoefficients[this.selectedProduct][f];
-                        const maxTreatableArea = this.totalWallArea + this.totalCeilingArea;
-                        const treatedArea = Math.min(this.coverageSquareMeters, maxTreatableArea);
-                        
-                        const treatmentAbsorption = treatedArea * productAlpha;
-                        const totalTreatedAbsorption = roomAbsorption + treatmentAbsorption;
-
-                        let rtTreated = totalTreatedAbsorption > 0 ? (0.161 * this.volume) / totalTreatedAbsorption : 0.2;
-                        
-                        treatedRtList.push(parseFloat(Math.max(0.1, rtTreated).toFixed(2)));
-                    });
-
-                    this.rtOptimizedData = optimizedRtList;
-                    this.rtTreatedData = treatedRtList;
-                    
-                    const sumTreated = treatedRtList.reduce((a, b) => a + b, 0);
-                    this.avgRtTreated = parseFloat((sumTreated / treatedRtList.length).toFixed(2));
-
-                    if (chartInstance) {
-                        chartInstance.data.datasets[0].data = [...this.rtCurrentData];
-                        chartInstance.data.datasets[1].data = [...this.rtOptimizedData];
-                        chartInstance.data.datasets[2].data = [...this.rtTreatedData];
-                        chartInstance.update();
-                    }
-                },
-
-                updateChartFromManual() {
-                    const sum = this.rtCurrentData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
-                    this.avgRtCurrent = parseFloat((sum / this.rtCurrentData.length).toFixed(2));
-                    this.calculate();
-                },
-
-                playAudio(type) {
-                    if (type === 'before') this.isPlayingBefore = true;
-                    else this.isPlayingAfter = true;
-
-                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    const bufferSize = audioCtx.sampleRate * 3;
-                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                    const output = buffer.getChannelData(0);
-
-                    for (let i = 0; i < bufferSize; i++) {
-                        output[i] = Math.random() * 2 - 1;
-                    }
-
-                    const whiteNoise = audioCtx.createBufferSource();
-                    whiteNoise.buffer = buffer;
-
-                    const filter = audioCtx.createBiquadFilter();
-                    filter.type = 'lowpass';
-                    filter.frequency.value = type === 'before' ? 3200 : 1400;
-
-                    const gainNode = audioCtx.createGain();
-                    const now = audioCtx.currentTime;
-                    
-                    const decay = type === 'before' ? Math.min(3.0, Math.max(0.8, this.avgRtCurrent)) : Math.min(2.0, Math.max(0.3, this.avgRtTreated));
-                    
-                    gainNode.gain.setValueAtTime(0.6, now);
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + decay);
-
-                    whiteNoise.connect(filter);
-                    filter.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
-
-                    whiteNoise.start(now);
-                    whiteNoise.stop(now + decay);
-
-                    setTimeout(() => {
-                        this.isPlayingBefore = false;
-                        this.isPlayingAfter = false;
-                    }, decay * 1000);
-                },
-
-                downloadPDF() {
-                    const element = document.getElementById('pdf-export-area');
-                    const opt = {
-                        margin:       [4, 4, 4, 4],
-                        filename:     `Rapporto_Acustico_${this.projectName.replace(/\s+/g, '_')}.pdf`,
-                        image:        { type: 'jpeg', quality: 0.98 },
-                        html2canvas:  { scale: 2, useCORS: true, logging: false, letterRendering: true },
-                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                    };
-                    html2pdf().from(element).set(opt).save();
-                },
-
-                shareWhatsApp() {
-                    const text = encodeURIComponent(
-                        `*Eurokustik - Report Acustico*\n` +
-                        `📁 Progetto: ${this.projectName}\n` +
-                        `👤 Cliente: ${this.customerName}\n` +
-                        `📐 Volume: ${this.volume} m³\n` +
-                        `⏱️ Riverbero Attuale: ${this.avgRtCurrent}s\n` +
-                        `⏱️ Riverbero Trattato: ${this.avgRtTreated}s\n` +
-                        `🌐 www.eurokustik.com`
-                    );
-                    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-                },
-
-                shareEmail() {
-                    const subject = encodeURIComponent(`Report Acustico - ${this.projectName}`);
-                    const body = encodeURIComponent(
-                        `Gentile ${this.customerName},\n\n` +
-                        `Di seguito i dati del calcolo acustico per il progetto "${this.projectName}":\n\n` +
-                        `- Volume Stanza: ${this.volume} m³\n` +
-                        `- Tempo di Riverbero Attuale (T60): ${this.avgRtCurrent} s\n` +
-                        `- Tempo di Riverbero Previsto con Trattamento: ${this.avgRtTreated} s\n\n` +
-                        `Cordiali saluti,\n` +
-                        `Eurokustik / seron srl\n` +
-                        `www.eurokustik.com`
-                    );
-                    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-                },
-
-                async saveProject() {
-                    if (!this.privacyAccepted) return;
-                    try {
-                        const response = await fetch('/api/save', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                project_name: this.projectName,
-                                customer_name: this.customerName,
-                                length: this.length,
-                                width: this.width,
-                                height: this.height,
-                                volume: this.volume,
-                                walls: this.walls,
-                                ceiling: this.ceiling,
-                                selected_product: this.selectedProduct,
-                                coverage_percentage: this.coveragePercentage,
-                                coverage_sqm: this.coverageSquareMeters,
-                                rt_current: this.rtCurrentData,
-                                rt_treated: this.rtTreatedData
-                            })
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            this.saveStatus = this.t.saved;
-                        } else {
-                            this.saveStatus = this.t.error;
-                        }
-                    } catch (e) {
-                        this.saveStatus = this.t.error;
-                    }
-                }
+        },
+        ita: {
+            title: "Calcolatore Acustico e Tempo di Riverbero",
+            params: "Parametri della Stanza",
+            projectName: "Nome Progetto",
+            customerName: "Nome Cliente",
+            customerEmail: "Email Cliente",
+            length: "Lunghezza (m)",
+            width: "Larghezza (m)",
+            height: "Altezza (m)",
+            floor: "Pavimento",
+            floors: {
+                parket: "Parquet / Pavimento in Legno (0.05)",
+                beton: "Cemento / Calcestruzzo (0.02)",
+                teppich: "Moquette / Tappeto (0.25)"
+            },
+            wallsBreakdown: "Materiale Pareti (Superficie in m²)",
+            totalWalls: "Totale pareti",
+            ceilingBreakdown: "Materiale Soffitto (Superficie in m²)",
+            totalCeiling: "Totale soffitto",
+            materials: {
+                glas: "Vetro / Finestre (m²)",
+                putz: "Intonaco (m²)",
+                holz: "Legno (m²)",
+                beton: "Cemento (m²)",
+                betonDecke: "Soffitto in Cemento (m²)",
+                holzDecke: "Soffitto in Legno (m²)"
+            },
+            treatmentTitle: "Trattamento & Scelta Prodotto",
+            productSelect: "Prodotto a Catalogo",
+            treatmentPercentage: "Percentuale di superficie da trattare",
+            saveBtn: "Invia Richiesta / Salva Progetto",
+            downloadPdf: "Scarica Report PDF",
+            privacyText: "Ho letto e accetto l'informativa sulla privacy e il trattamento dei dati di eurokustik.com.",
+            volume: "Volume Stanza",
+            rtCurrent: "Riverbero Attuale",
+            rtTreated: "Riverbero Trattato",
+            manualTitle: "Rilievi Fonometrici Manuali (Hz)",
+            manualDesc: "Modifica direttamente i valori attuali inserendo le misurazioni rilevate con il fonometro.",
+            chartTitle: "Tempo di Riverbero T60 per Frequenze (Secondi)",
+            audioTitle: "Simulazione Acustica (Prima / Dopo)",
+            audioDesc: "Ascolta il riverbero simulato nella stanza in base alle dimensioni attuali e al trattamento scelto.",
+            playBefore: "Prima (Senza Pannelli)",
+            playAfter: "Dopo (Con Trattamento)",
+            saved: "Client email aperto con successo!",
+            products: {
+                melamina: "Schiuma di Melamina / Basotect (5 cm)",
+                poliuretano: "Poliuretano Espanso (5 cm)",
+                stratocell: "Stratocell Whisper (5 cm)",
+                poliestere: "Fibra di Poliestere (5 cm)",
+                fibrotech: "FibroTech Pannelli dogati"
             }
         }
-    </script>
-</body>
-</html>
+    };
+
+    const absorptionCoefficients = {
+        parket: { 125: 0.04, 250: 0.04, 500: 0.03, 1000: 0.03, 2000: 0.02, 4000: 0.02 },
+        beton: { 125: 0.01, 250: 0.01, 500: 0.02, 1000: 0.02, 2000: 0.03, 4000: 0.04 },
+        teppich: { 125: 0.02, 250: 0.08, 500: 0.25, 1000: 0.45, 2000: 0.65, 4000: 0.75 },
+        glas: { 125: 0.10, 250: 0.05, 500: 0.03, 1000: 0.02, 2000: 0.02, 4000: 0.02 },
+        putz: { 125: 0.02, 250: 0.03, 500: 0.04, 1000: 0.05, 2000: 0.04, 4000: 0.03 },
+        holz: { 125: 0.15, 250: 0.12, 500: 0.10, 1000: 0.08, 2000: 0.07, 4000: 0.06 }
+    };
+
+    const productCoefficients = {
+        melamina: { 125: 0.15, 250: 0.45, 500: 0.85, 1000: 0.95, 2000: 0.95, 4000: 0.90 },
+        poliuretano: { 125: 0.12, 250: 0.35, 500: 0.75, 1000: 0.85, 2000: 0.80, 4000: 0.75 },
+        stratocell: { 125: 0.20, 250: 0.55, 500: 0.90, 1000: 0.95, 2000: 0.90, 4000: 0.85 },
+        poliestere: { 125: 0.18, 250: 0.50, 500: 0.88, 1000: 0.92, 2000: 0.88, 4000: 0.82 },
+        fibrotech: { 125: 0.10, 250: 0.30, 500: 0.75, 1000: 0.90, 2000: 0.80, 4000: 0.70 }
+    };
+
+    function acousticsApp() {
+        let chartInstance = null;
+
+        return {
+            lang: 'ita',
+            projectName: 'Ufficio Seron',
+            customerName: 'Cliente Test',
+            customerEmail: '',
+            length: 6.0,
+            width: 4.0,
+            height: 2.8,
+            floorMaterial: 'parket',
+            walls: { glas: 6.0, putz: 30.0, holz: 0.0, beton: 4.0 },
+            ceiling: { beton: 24.0, holz: 0.0 },
+            selectedProduct: 'melamina',
+            coveragePercentage: 35,
+            coverageSquareMeters: 14.0,
+            volume: 67.2,
+            totalWallArea: 40.0,
+            totalCeilingArea: 24.0,
+            avgRtCurrent: 0.0,
+            avgRtTreated: 0.0,
+            rtCurrentData: [1.8, 2.1, 1.9, 1.6, 1.3, 1.0],
+            rtOptimizedData: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+            rtTreatedData: [1.2, 1.3, 1.0, 0.8, 0.7, 0.6],
+            privacyAccepted: false,
+            saveStatus: '',
+            frequencies: ['125 Hz', '250 Hz', '500 Hz', '1000 Hz', '2000 Hz', '4000 Hz'],
+            isPlayingBefore: false,
+            isPlayingAfter: false,
+
+            get t() { return translations[this.lang]; },
+
+            init() {
+                this.updateDimensions();
+                this.$nextTick(() => {
+                    setTimeout(() => {
+                        const canvasEl = document.getElementById('acousticsChart');
+                        if (canvasEl && typeof Chart !== 'undefined') {
+                            const ctx = canvasEl.getContext('2d');
+                            chartInstance = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: this.frequencies,
+                                    datasets: [
+                                        {
+                                            label: 'T60 Attuale (s)',
+                                            data: [...this.rtCurrentData],
+                                            borderColor: '#0284c7',
+                                            backgroundColor: 'rgba(2, 132, 199, 0.05)',
+                                            borderWidth: 2,
+                                            tension: 0.3,
+                                            fill: false
+                                        },
+                                        {
+                                            label: 'T60 Obiettivo (s)',
+                                            data: [...this.rtOptimizedData],
+                                            borderColor: '#10b981',
+                                            borderWidth: 2,
+                                            borderDash: [5, 5],
+                                            tension: 0.3,
+                                            fill: false
+                                        },
+                                        {
+                                            label: 'T60 Trattato (s)',
+                                            data: [...this.rtTreatedData],
+                                            borderColor: '#0f172a',
+                                            backgroundColor: 'rgba(15, 23, 42, 0.08)',
+                                            borderWidth: 3,
+                                            tension: 0.3,
+                                            fill: true
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: { y: { beginAtZero: true } },
+                                    plugins: { legend: { labels: { boxWidth: 12, font: { size: 10 } } } }
+                                }
+                            });
+                        }
+                    }, 250);
+                });
+            },
+
+            updateDimensions() {
+                this.volume = parseFloat((this.length * this.width * this.height).toFixed(2));
+                const perimeter = 2 * (this.length + this.width);
+                this.totalWallArea = parseFloat((perimeter * this.height).toFixed(1));
+                this.totalCeilingArea = parseFloat((this.length * this.width).toFixed(1));
+                
+                this.walls.putz = parseFloat((this.totalWallArea * 0.7).toFixed(1));
+                this.walls.glas = parseFloat((this.totalWallArea * 0.2).toFixed(1));
+                this.walls.beton = parseFloat((this.totalWallArea * 0.1).toFixed(1));
+                this.walls.holz = 0.0;
+
+                this.ceiling.beton = this.totalCeilingArea;
+                this.ceiling.holz = 0.0;
+
+                this.calculateCurrentRtFromGeometry();
+                this.updatePercentage();
+            },
+
+            calculateCurrentRtFromGeometry() {
+                const freqs = [125, 250, 500, 1000, 2000, 4000];
+                const floorArea = this.length * this.width;
+
+                freqs.forEach((f, index) => {
+                    const aFloor = floorArea * absorptionCoefficients[this.floorMaterial][f];
+                    const aWalls = 
+                        (this.walls.glas * absorptionCoefficients.glas[f]) +
+                        (this.walls.putz * absorptionCoefficients.putz[f]) +
+                        (this.walls.holz * absorptionCoefficients.holz[f]) +
+                        (this.walls.beton * absorptionCoefficients.beton[f]);
+                    const aCeiling = 
+                        (this.ceiling.beton * absorptionCoefficients.beton[f]) +
+                        (this.ceiling.holz * absorptionCoefficients.holz[f]);
+
+                    const totalAbsorption = aFloor + aWalls + aCeiling;
+                    let calculatedT60 = totalAbsorption > 0 ? (0.161 * this.volume) / totalAbsorption : 2.0;
+                    this.rtCurrentData[index] = parseFloat(Math.min(5.0, Math.max(0.2, calculatedT60)).toFixed(2));
+                });
+
+                const sum = this.rtCurrentData.reduce((a, b) => a + b, 0);
+                this.avgRtCurrent = parseFloat((sum / this.rtCurrentData.length).toFixed(2));
+            },
+
+            onWallAreaChange(changedKey) {
+                let keys = ['glas', 'putz', 'holz', 'beton'];
+                let currentChangedVal = parseFloat(this.walls[changedKey]) || 0;
+                if (currentChangedVal < 0) currentChangedVal = 0;
+                if (currentChangedVal > this.totalWallArea) currentChangedVal = this.totalWallArea;
+                this.walls[changedKey] = currentChangedVal;
+
+                let remainingArea = this.totalWallArea - currentChangedVal;
+                let otherKeys = keys.filter(k => k !== changedKey);
+                let currentSumOthers = otherKeys.reduce((acc, k) => acc + (parseFloat(this.walls[k]) || 0), 0);
+
+                if (currentSumOthers > 0) {
+                    otherKeys.forEach(k => {
+                        let ratio = (parseFloat(this.walls[k]) || 0) / currentSumOthers;
+                        this.walls[k] = parseFloat((remainingArea * ratio).toFixed(1));
+                    });
+                } else if (otherKeys.length > 0) {
+                    let splitVal = parseFloat((remainingArea / otherKeys.length).toFixed(1));
+                    otherKeys.forEach(k => { this.walls[k] = splitVal; });
+                }
+
+                this.calculateCurrentRtFromGeometry();
+                this.updatePercentage();
+            },
+
+            onCeilingAreaChange(changedKey) {
+                let otherKey = changedKey === 'beton' ? 'holz' : 'beton';
+                let val = parseFloat(this.ceiling[changedKey]) || 0;
+                if (val < 0) val = 0;
+                if (val > this.totalCeilingArea) val = this.totalCeilingArea;
+                this.ceiling[changedKey] = val;
+                this.ceiling[otherKey] = parseFloat((this.totalCeilingArea - val).toFixed(1));
+                
+                this.calculateCurrentRtFromGeometry();
+                this.updatePercentage();
+            },
+
+            updatePercentage() {
+                const totalSurface = this.totalWallArea + this.totalCeilingArea;
+                this.coverageSquareMeters = parseFloat(((totalSurface * this.coveragePercentage) / 100).toFixed(1));
+                this.calculate();
+            },
+
+            calculate() {
+                this.volume = parseFloat((this.length * this.width * this.height).toFixed(2));
+                const freqs = [125, 250, 500, 1000, 2000, 4000];
+                let treatedRtList = [];
+                let optimizedRtList = [];
+                const floorArea = this.length * this.width;
+
+                freqs.forEach((f, index) => {
+                    optimizedRtList.push(0.50);
+
+                    const aFloor = floorArea * absorptionCoefficients[this.floorMaterial][f];
+                    const aWalls = 
+                        (this.walls.glas * absorptionCoefficients.glas[f]) +
+                        (this.walls.putz * absorptionCoefficients.putz[f]) +
+                        (this.walls.holz * absorptionCoefficients.holz[f]) +
+                        (this.walls.beton * absorptionCoefficients.beton[f]);
+                    const aCeiling = 
+                        (this.ceiling.beton * absorptionCoefficients.beton[f]) +
+                        (this.ceiling.holz * absorptionCoefficients.holz[f]);
+
+                    const roomAbsorption = aFloor + aWalls + aCeiling;
+                    const productAlpha = productCoefficients[this.selectedProduct][f];
+                    const maxTreatableArea = this.totalWallArea + this.totalCeilingArea;
+                    const treatedArea = Math.min(this.coverageSquareMeters, maxTreatableArea);
+                    
+                    const treatmentAbsorption = treatedArea * productAlpha;
+                    const totalTreatedAbsorption = roomAbsorption + treatmentAbsorption;
+
+                    let rtTreated = totalTreatedAbsorption > 0 ? (0.161 * this.volume) / totalTreatedAbsorption : 0.2;
+                    treatedRtList.push(parseFloat(Math.max(0.1, rtTreated).toFixed(2)));
+                });
+
+                this.rtOptimizedData = optimizedRtList;
+                this.rtTreatedData = treatedRtList;
+                
+                const sumTreated = treatedRtList.reduce((a, b) => a + b, 0);
+                this.avgRtTreated = parseFloat((sumTreated / treatedRtList.length).toFixed(2));
+
+                if (chartInstance) {
+                    chartInstance.data.datasets[0].data = [...this.rtCurrentData];
+                    chartInstance.data.datasets[1].data = [...this.rtOptimizedData];
+                    chartInstance.data.datasets[2].data = [...this.rtTreatedData];
+                    chartInstance.update();
+                }
+            },
+
+            updateChartFromManual() {
+                const sum = this.rtCurrentData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+                this.avgRtCurrent = parseFloat((sum / this.rtCurrentData.length).toFixed(2));
+                this.calculate();
+            },
+
+            playAudio(type) {
+                if (type === 'before') this.isPlayingBefore = true;
+                else this.isPlayingAfter = true;
+
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const bufferSize = audioCtx.sampleRate * 3;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+
+                const whiteNoise = audioCtx.createBufferSource();
+                whiteNoise.buffer = buffer;
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = type === 'before' ? 3200 : 1400;
+
+                const gainNode = audioCtx.createGain();
+                const now = audioCtx.currentTime;
+                const decay = type === 'before' ? Math.min(3.0, Math.max(0.8, this.avgRtCurrent)) : Math.min(2.0, Math.max(0.3, this.avgRtTreated));
+                
+                gainNode.gain.setValueAtTime(0.6, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + decay);
+
+                whiteNoise.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                whiteNoise.start(now);
+                whiteNoise.stop(now + decay);
+
+                setTimeout(() => {
+                    this.isPlayingBefore = false;
+                    this.isPlayingAfter = false;
+                }, decay * 1000);
+            },
+
+            downloadPDF() {
+                const element = document.getElementById('pdf-export-area');
+                const opt = {
+                    margin:       [4, 4, 4, 4],
+                    filename:     `Rapporto_Acustico_${this.projectName.replace(/\s+/g, '_')}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                html2pdf().from(element).set(opt).save();
+            },
+
+            shareWhatsApp() {
+                const text = encodeURIComponent(
+                    `Eurokustik - Report Acustico\nProgetto: ${this.projectName}\nCliente: ${this.customerName}\nVolume: ${this.volume} m³\nRiverbero Attuale: ${this.avgRtCurrent}s\nRiverbero Trattato: ${this.avgRtTreated}s\nwww.eurokustik.com`
+                );
+                window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+            },
+
+            shareEmail() {
+                const subject = encodeURIComponent(`Report Acustico - ${this.projectName}`);
+                const body = encodeURIComponent(
+                    `Gentile ${this.customerName},\n\nDi seguito i dati del calcolo acustico per il progetto "${this.projectName}":\n\n- Volume Stanza: ${this.volume} m³\n- Tempo di Riverbero Attuale (T60): ${this.avgRtCurrent} s\n- Tempo di Riverbero Previsto con Trattamento: ${this.avgRtTreated} s\n\nCordiali saluti,\nEurokustik / seron srl\nwww.eurokustik.com`
+                );
+                window.location.href = `mailto:${this.customerEmail}?subject=${subject}&body=${body}`;
+            },
+
+            saveAndSendEmail() {
+                if (!this.privacyAccepted) return;
+                const recipient = "info@eurokustik.com";
+                const ccParam = this.customerEmail ? `&cc=${encodeURIComponent(this.customerEmail)}` : '';
+                const subject = encodeURIComponent(`Nuova Richiesta Progetto Acustico: ${this.projectName} (${this.customerName})`);
+                const body = encodeURIComponent(
+                    `Dati del progetto acustico:\n\n- Nome Progetto: ${this.projectName}\n- Cliente: ${this.customerName}\n- Email Cliente: ${this.customerEmail || 'Non specificata'}\n- Dimensioni: ${this.length}m x ${this.width}m x ${this.height}m (Volume: ${this.volume} m³)\n- Pavimento: ${this.floorMaterial}\n- Prodotto Scelto: ${this.selectedProduct}\n- Percentuale Trattamento: ${this.coveragePercentage}% (${this.coverageSquareMeters} m²)\n- Riverbero Attuale (T60): ${this.avgRtCurrent} s\n- Riverbero Trattato (T60): ${this.avgRtTreated} s\n\nRichiesta generata tramite calcolatore online su www.eurokustik.com`
+                );
+                window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}${ccParam}`;
+                this.saveStatus = this.t.saved;
+            }
+        }
+    }
+</script>
