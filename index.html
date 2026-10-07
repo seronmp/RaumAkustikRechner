@@ -23,7 +23,8 @@
         <!-- Header & Language Switcher -->
         <header class="flex justify-between items-center bg-white p-5 rounded-xl shadow-sm border border-slate-200">
             <div class="flex items-center gap-3">
-                <div x-html="brand.logoSvg"></div>
+                <!-- Logo Dinamico Tradotto -->
+                <div x-html="`&lt;svg class='h-8 w-auto text-slate-900' viewBox='0 0 200 32' fill='currentColor'&gt;&lt;text x='0' y='24' font-family='sans-serif' font-weight='900' font-size='20' letter-spacing='1'&gt;${t.logoText}&lt;/text&gt;&lt;/svg&gt;`"></div>
                 <div>
                     <h1 class="text-xl font-bold text-slate-900" x-text="t.title"></h1>
                     <p class="text-xs text-slate-500" x-text="brand.companyTagline"></p>
@@ -69,6 +70,11 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase" x-text="t.customerName"></label>
                     <input type="text" x-model="customerName" class="w-full mt-1 p-2.5 text-sm rounded-lg focus:ring-2 focus:ring-slate-900 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase" x-text="t.customerEmail"></label>
+                    <input type="email" x-model="customerEmail" placeholder="cliente@email.com" class="w-full mt-1 p-2.5 text-sm rounded-lg focus:ring-2 focus:ring-slate-900 focus:outline-none">
                 </div>
 
                 <div class="grid grid-cols-3 gap-2">
@@ -186,10 +192,10 @@
                 <!-- PDF Header -->
                 <div class="flex justify-between items-center border-b pb-3">
                     <div class="flex items-center gap-3">
-                        <div x-html="brand.logoSvg"></div>
+                        <div x-html="`&lt;svg class='h-6 w-auto text-slate-900' viewBox='0 0 200 32' fill='currentColor'&gt;&lt;text x='0' y='24' font-family='sans-serif' font-weight='900' font-size='20' letter-spacing='1'&gt;${t.logoText}&lt;/text&gt;&lt;/svg&gt;`"></div>
                         <div>
                             <h2 class="font-bold text-slate-900 text-sm" x-text="brand.companyName + ' - Acoustic Report'"></h2>
-                            <p class="text-[10px] text-slate-500"><span x-text="projectName"></span> | <span x-text="customerName"></span></p>
+                            <p class="text-[10px] text-slate-500"><span x-text="projectName"></span> | <span x-text="customerName"></span> (<span x-text="customerEmail"></span>)</p>
                         </div>
                     </div>
                     <div class="text-right text-[10px] font-bold text-sky-600" x-text="brand.website"></div>
@@ -316,16 +322,17 @@
 
         // CONFIGURAZIONE BRAND (Modificabile per ogni partner / ditta)
         const brandConfig = {
-            companyName: "IL TUO LOGO / Partner",
+            companyName: "Nome Vostra Azienda / Partner",
             companyTagline: "Professional Acoustic Solutions",
             companyDetails: "Indirizzo Azienda — Telefono / Contatti",
             website: "www.vostro-dominio.com",
-            logoSvg: `<svg class="h-8 w-auto text-slate-900" viewBox="0 0 200 32" fill="currentColor"><text x="0" y="24" font-family="sans-serif" font-weight="900" font-size="20" letter-spacing="1">IL TUO LOGO</text></svg>`
+            salesEmail: "info@vostro-dominio.com"
         };
 
         const translations = {
             de: {
                 title: "Raumakustik & Nachhallzeit Rechner",
+                logoText: "IHR LOGO",
                 guideTitle: "Wie funktioniert dieser Akustikrechner?",
                 guideText1: "Dieses Tool berechnet in Echtzeit die Nachhallzeit (T60) Ihres Raumes basierend auf den Maßen und Materialien. Fügen Sie Ihre Raumwerte links ein, wählen Sie das passende Akustik-Produkt und analysieren Sie das Ergebnis im Diagramm.",
                 guideStep1: "Geben Sie Länge, Breite, Höhe und die Oberflächenmaterialien (Glas, Beton, Putz) ein.",
@@ -333,7 +340,8 @@
                 guideStep3: "Laden Sie den professionellen Bericht als PDF herunter oder senden Sie uns die Anfrage.",
                 params: "Raumparameter",
                 projectName: "Projektname",
-                customerName: "Kunde",
+                customerName: "Kunde / Name",
+                customerEmail: "Kunden E-Mail",
                 length: "Länge (m)",
                 width: "Breite (m)",
                 height: "Höhe (m)",
@@ -361,7 +369,7 @@
                 audioDesc: "Hören Sie den simulierten Nachhall im Raum basierend auf der aktuellen Raumgröße und Behandlung.",
                 playBefore: "Vorher (Ohne Dämmung)",
                 playAfter: "Nachher (Mit Akustik)",
-                saved: "Anfrage erfolgreich gesendet!",
+                saved: "E-Mail-Programm mit Ihrer Anfrage geöffnet!",
                 error: "Fehler beim Senden.",
                 products: {
                     melamina: "Melaminschaum / Basotect (5 cm)",
@@ -379,6 +387,7 @@
             },
             ita: {
                 title: "Calcolatore Acustico e Tempo di Riverbero",
+                logoText: "IL TUO LOGO",
                 guideTitle: "Come funziona questo calcolatore acustico?",
                 guideText1: "Questo strumento calcola in tempo reale il tempo di riverbero (T60) del tuo ambiente in base alle dimensioni e ai materiali presenti. Inserisci i dati della stanza sulla sinistra, seleziona il prodotto fonoassorbente e analizza l'andamento nel grafico.",
                 guideStep1: "Inserisci lunghezza, larghezza, altezza e i materiali delle superfici (vetro, cemento, intonaco).",
@@ -386,7 +395,8 @@
                 guideStep3: "Scarica il report professionale in PDF o invia direttamente la richiesta di preventivo.",
                 params: "Parametri della Stanza",
                 projectName: "Nome Progetto",
-                customerName: "Cliente",
+                customerName: "Nome Cliente",
+                customerEmail: "Email Cliente",
                 length: "Lunghezza (m)",
                 width: "Larghezza (m)",
                 height: "Altezza (m)",
@@ -414,7 +424,7 @@
                 audioDesc: "Ascolta il riverbero simulato nella stanza in base alle dimensioni attuali e al trattamento scelto.",
                 playBefore: "Prima (Senza Pannelli)",
                 playAfter: "Dopo (Con Trattamento)",
-                saved: "Richiesta inviata con successo!",
+                saved: "Programma di posta aperto con la richiesta pronta!",
                 error: "Errore durante l'invio.",
                 products: {
                     melamina: "Schiuma di Melamina / Basotect (5 cm)",
@@ -457,6 +467,7 @@
                 brand: brandConfig,
                 projectName: 'Ufficio Partner',
                 customerName: 'Cliente Test',
+                customerEmail: 'cliente@email.com',
                 length: 6.0,
                 width: 4.0,
                 height: 2.8,
@@ -725,7 +736,7 @@
                     const text = encodeURIComponent(
                         `*${this.brand.companyName} - Report Acustico*\n` +
                         `📁 Progetto: ${this.projectName}\n` +
-                        `👤 Cliente: ${this.customerName}\n` +
+                        `👤 Cliente: ${this.customerName} (${this.customerEmail})\n` +
                         `📐 Volume: ${this.volume} m³\n` +
                         `⏱️ Riverbero Attuale: ${this.avgRtCurrent}s\n` +
                         `⏱️ Riverbero Trattato: ${this.avgRtTreated}s\n` +
@@ -746,40 +757,31 @@
                         `${this.brand.companyName}\n` +
                         `${this.brand.website}`
                     );
-                    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+                    window.location.href = `mailto:${this.customerEmail}?subject=${subject}&body=${body}`;
                 },
 
-                async saveProject() {
+                saveProject() {
                     if (!this.privacyAccepted) return;
-                    try {
-                        const response = await fetch('/api/save', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                project_name: this.projectName,
-                                customer_name: this.customerName,
-                                length: this.length,
-                                width: this.width,
-                                height: this.height,
-                                volume: this.volume,
-                                walls: this.walls,
-                                ceiling: this.ceiling,
-                                selected_product: this.selectedProduct,
-                                coverage_percentage: this.coveragePercentage,
-                                coverage_sqm: this.coverageSquareMeters,
-                                rt_current: this.rtCurrentData,
-                                rt_treated: this.rtTreatedData
-                            })
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            this.saveStatus = this.t.saved;
-                        } else {
-                            this.saveStatus = this.t.error;
-                        }
-                    } catch (e) {
-                        this.saveStatus = this.t.saved;
-                    }
+                    
+                    const recipient = this.brand.salesEmail;
+                    const ccParam = this.customerEmail ? `&cc=${encodeURIComponent(this.customerEmail)}` : '';
+                    const subject = encodeURIComponent(`Nuova Richiesta Progetto Acustico: ${this.projectName} (${this.customerName})`);
+                    const body = encodeURIComponent(
+                        `Richiesta inviata dal cliente tramite calcolatore acustico:\n\n` +
+                        `- Nome Progetto: ${this.projectName}\n` +
+                        `- Nome Cliente: ${this.customerName}\n` +
+                        `- Email Cliente: ${this.customerEmail}\n` +
+                        `- Dimensioni Stanza: ${this.length}m x ${this.width}m x ${this.height}m (Volume: ${this.volume} m³)\n` +
+                        `- Pavimento: ${this.floorMaterial}\n` +
+                        `- Prodotto Scelto: ${this.selectedProduct}\n` +
+                        `- Percentuale Trattamento: ${this.coveragePercentage}% (${this.coverageSquareMeters} m²)\n` +
+                        `- Riverbero Attuale (T60 medio): ${this.avgRtCurrent} s\n` +
+                        `- Riverbero Trattato (T60 medio): ${this.avgRtTreated} s\n\n` +
+                        `Inviato tramite tool protetto (${this.brand.website})`
+                    );
+
+                    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}${ccParam}`;
+                    this.saveStatus = this.t.saved;
                 }
             }
         }
