@@ -14,9 +14,11 @@
     <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
     <style>
         input, select { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #1e293b !important; }
+        /* Impedisce la selezione del testo per ostacolare il copia-incolla */
+        body { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 p-4 md:p-8 font-sans">
+<body class="bg-slate-100 text-slate-800 p-4 md:p-8 font-sans" oncontextmenu="return false;">
     <div class="max-w-7xl mx-auto space-y-6">
         <!-- Header & Language Switcher -->
         <header class="flex justify-between items-center bg-white p-5 rounded-xl shadow-sm border border-slate-200">
@@ -260,6 +262,25 @@
     </div>
 
     <script>
+        // CONTROLLO DI SICUREZZA DOMINIO (Blocca l'esecuzione se copiato su server non autorizzati)
+        (function() {
+            const allowedDomains = ["eurokustik.com", "seronmp.github.io", "localhost", "127.0.0.1"];
+            const currentHostname = window.location.hostname;
+            const isAllowed = allowedDomains.some(domain => currentHostname.endsWith(domain));
+            if (!isAllowed) {
+                document.body.innerHTML = "<div style='padding:50px; text-align:center; font-family:sans-serif;'><h2>Access Denied</h2><p>This application is protected and unauthorized hosting is not permitted.</p></div>";
+                throw new Error("Unauthorized domain");
+            }
+        })();
+
+        // PROTEZIONE TASTO DESTRA E ISPEZIONE CODICE
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
         const brandConfig = {
             companyName: "Eurokustik / seron srl",
             companyTagline: "Eurokustik Professional Acoustic Solutions",
