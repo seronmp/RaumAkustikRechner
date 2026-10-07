@@ -14,7 +14,6 @@
     <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
     <style>
         input, select { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; color: #1e293b !important; }
-        /* Impedisce la selezione del testo per ostacolare il copia-incolla */
         body { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
     </style>
 </head>
@@ -151,8 +150,12 @@
                         <label for="privacyCheck" class="text-[11px] text-slate-600 leading-tight cursor-pointer" x-text="t.privacyText"></label>
                     </div>
 
-                    <button @click="saveProject" :disabled="!privacyAccepted" class="w-full bg-slate-900 text-white p-3 rounded-lg font-semibold hover:bg-slate-800 transition text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" x-text="t.saveBtn"></button>
-                    
+                    <!-- Pulsante Invio Richiesta con Prezzo White-Label -->
+                    <button @click="saveProject" :disabled="!privacyAccepted" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex justify-between items-center px-4">
+                        <span x-text="t.sendRequestBtn"></span>
+                        <span class="bg-indigo-800 text-xs px-2 py-0.5 rounded font-bold">199/year €</span>
+                    </button>
+
                     <button @click="downloadPDF" class="w-full bg-sky-600 text-white p-3 rounded-lg font-semibold hover:bg-sky-700 transition text-sm shadow-sm" x-text="t.downloadPdf"></button>
                     
                     <div class="grid grid-cols-2 gap-2 pt-1">
@@ -262,7 +265,7 @@
     </div>
 
     <script>
-        // CONTROLLO DI SICUREZZA DOMINIO (Blocca l'esecuzione se copiato su server non autorizzati)
+        // CONTROLLO DI SICUREZZA DOMINIO
         (function() {
             const allowedDomains = ["eurokustik.com", "seronmp.github.io", "localhost", "127.0.0.1"];
             const currentHostname = window.location.hostname;
@@ -281,12 +284,13 @@
             }
         });
 
+        // CONFIGURAZIONE BRAND (Modificabile per ogni partner / ditta)
         const brandConfig = {
-            companyName: "Eurokustik / seron srl",
-            companyTagline: "Eurokustik Professional Acoustic Solutions",
-            companyDetails: "Via Glorenza 20 / Glurnserstr. 20 — 39024 Malles / Mals (BZ) T. +39 473 831059",
-            website: "www.eurokustik.com",
-            logoSvg: `<svg class="h-8 w-auto text-slate-900" viewBox="0 0 220 32" fill="currentColor"><text x="0" y="24" font-family="sans-serif" font-weight="900" font-size="24" letter-spacing="2">EUROKUSTIK</text></svg>`
+            companyName: "Nome Vostra Azienda / Partner",
+            companyTagline: "Professional Acoustic Solutions",
+            companyDetails: "Indirizzo Azienda — Telefono / Contatti",
+            website: "www.vostro-dominio.com",
+            logoSvg: `<svg class="h-8 w-auto text-slate-900" viewBox="0 0 220 32" fill="currentColor"><text x="0" y="24" font-family="sans-serif" font-weight="900" font-size="20" letter-spacing="1">LOGO PARTNER</text></svg>`
         };
 
         const translations = {
@@ -306,7 +310,7 @@
                 treatmentTitle: "Akustik-Produkt & Behandlung",
                 productSelect: "Produkt aus Katalog",
                 treatmentPercentage: "Zu behandelnde Fläche (%)",
-                saveBtn: "In Datenbank speichern",
+                sendRequestBtn: "Anfrage senden",
                 downloadPdf: "PDF-Bericht herunterladen",
                 privacyText: "Ich stimme der Verarbeitung meiner Daten zu.",
                 volume: "Raumvolumen",
@@ -319,8 +323,8 @@
                 audioDesc: "Hören Sie den simulierten Nachhall im Raum basierend auf der aktuellen Raumgröße und Behandlung.",
                 playBefore: "Vorher (Ohne Dämmung)",
                 playAfter: "Nachher (Mit Akustik)",
-                saved: "Erfolgreich gespeichert!",
-                error: "Fehler beim Speichern.",
+                saved: "Anfrage erfolgreich gesendet!",
+                error: "Fehler beim Senden.",
                 products: {
                     melamina: "Melaminschaum / Basotect (5 cm)",
                     poliuretano: "Polyurethanschaum (5 cm)",
@@ -351,7 +355,7 @@
                 treatmentTitle: "Trattamento & Scelta Prodotto",
                 productSelect: "Prodotto a Catalogo",
                 treatmentPercentage: "Percentuale di superficie da trattare",
-                saveBtn: "Salva nel Database",
+                sendRequestBtn: "Invia Richiesta",
                 downloadPdf: "Scarica Report PDF",
                 privacyText: "Ho letto e accetto l'informativa sulla privacy.",
                 volume: "Volume Stanza",
@@ -364,8 +368,8 @@
                 audioDesc: "Ascolta il riverbero simulato nella stanza in base alle dimensioni attuali e al trattamento scelto.",
                 playBefore: "Prima (Senza Pannelli)",
                 playAfter: "Dopo (Con Trattamento)",
-                saved: "Salvato con successo!",
-                error: "Errore durante il salvataggio.",
+                saved: "Richiesta inviata con successo!",
+                error: "Errore durante l'invio.",
                 products: {
                     melamina: "Schiuma di Melamina / Basotect (5 cm)",
                     poliuretano: "Poliuretano Espanso (5 cm)",
@@ -593,145 +597,4 @@
                         const treatedArea = Math.min(this.coverageSquareMeters, maxTreatableArea);
                         
                         const treatmentAbsorption = treatedArea * productAlpha;
-                        const totalTreatedAbsorption = roomAbsorption + treatmentAbsorption;
-
-                        let rtTreated = totalTreatedAbsorption > 0 ? (0.161 * this.volume) / totalTreatedAbsorption : 0.2;
-                        treatedRtList.push(parseFloat(Math.max(0.1, rtTreated).toFixed(2)));
-                    });
-
-                    this.rtOptimizedData = optimizedRtList;
-                    this.rtTreatedData = treatedRtList;
-                    
-                    const sumTreated = treatedRtList.reduce((a, b) => a + b, 0);
-                    this.avgRtTreated = parseFloat((sumTreated / treatedRtList.length).toFixed(2));
-
-                    if (chartInstance) {
-                        chartInstance.data.datasets[0].data = [...this.rtCurrentData];
-                        chartInstance.data.datasets[1].data = [...this.rtOptimizedData];
-                        chartInstance.data.datasets[2].data = [...this.rtTreatedData];
-                        chartInstance.update();
-                    }
-                },
-
-                updateChartFromManual() {
-                    const sum = this.rtCurrentData.reduce((a, b) => a + (parseFloat(b) || 0), 0);
-                    this.avgRtCurrent = parseFloat((sum / this.rtCurrentData.length).toFixed(2));
-                    this.calculate();
-                },
-
-                playAudio(type) {
-                    if (type === 'before') this.isPlayingBefore = true;
-                    else this.isPlayingAfter = true;
-
-                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    const bufferSize = audioCtx.sampleRate * 3;
-                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                    const output = buffer.getChannelData(0);
-
-                    for (let i = 0; i < bufferSize; i++) {
-                        output[i] = Math.random() * 2 - 1;
-                    }
-
-                    const whiteNoise = audioCtx.createBufferSource();
-                    whiteNoise.buffer = buffer;
-                    const filter = audioCtx.createBiquadFilter();
-                    filter.type = 'lowpass';
-                    filter.frequency.value = type === 'before' ? 3200 : 1400;
-
-                    const gainNode = audioCtx.createGain();
-                    const now = audioCtx.currentTime;
-                    const decay = type === 'before' ? Math.min(3.0, Math.max(0.8, this.avgRtCurrent)) : Math.min(2.0, Math.max(0.3, this.avgRtTreated));
-                    
-                    gainNode.gain.setValueAtTime(0.6, now);
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + decay);
-
-                    whiteNoise.connect(filter);
-                    filter.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
-
-                    whiteNoise.start(now);
-                    whiteNoise.stop(now + decay);
-
-                    setTimeout(() => {
-                        this.isPlayingBefore = false;
-                        this.isPlayingAfter = false;
-                    }, decay * 1000);
-                },
-
-                downloadPDF() {
-                    const element = document.getElementById('pdf-export-area');
-                    const opt = {
-                        margin:       [4, 4, 4, 4],
-                        filename:     `Rapporto_Acustico_${this.projectName.replace(/\s+/g, '_')}.pdf`,
-                        image:        { type: 'jpeg', quality: 0.98 },
-                        html2canvas:  { scale: 2, useCORS: true, logging: false, letterRendering: true },
-                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                    };
-                    html2pdf().from(element).set(opt).save();
-                },
-
-                shareWhatsApp() {
-                    const text = encodeURIComponent(
-                        `*${this.brand.companyName} - Report Acustico*\n` +
-                        `📁 Progetto: ${this.projectName}\n` +
-                        `👤 Cliente: ${this.customerName}\n` +
-                        `📐 Volume: ${this.volume} m³\n` +
-                        `⏱️ Riverbero Attuale: ${this.avgRtCurrent}s\n` +
-                        `⏱️ Riverbero Trattato: ${this.avgRtTreated}s\n` +
-                        `🌐 ${this.brand.website}`
-                    );
-                    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-                },
-
-                shareEmail() {
-                    const subject = encodeURIComponent(`Report Acustico - ${this.projectName}`);
-                    const body = encodeURIComponent(
-                        `Gentile ${this.customerName},\n\n` +
-                        `Di seguito i dati del calcolo acustico per il progetto "${this.projectName}":\n\n` +
-                        `- Volume Stanza: ${this.volume} m³\n` +
-                        `- Tempo di Riverbero Attuale (T60): ${this.avgRtCurrent} s\n` +
-                        `- Tempo di Riverbero Previsto con Trattamento: ${this.avgRtTreated} s\n\n` +
-                        `Cordiali saluti,\n` +
-                        `${this.brand.companyName}\n` +
-                        `${this.brand.website}`
-                    );
-                    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-                },
-
-                async saveProject() {
-                    if (!this.privacyAccepted) return;
-                    try {
-                        const response = await fetch('/api/save', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                project_name: this.projectName,
-                                customer_name: this.customerName,
-                                length: this.length,
-                                width: this.width,
-                                height: this.height,
-                                volume: this.volume,
-                                walls: this.walls,
-                                ceiling: this.ceiling,
-                                selected_product: this.selectedProduct,
-                                coverage_percentage: this.coveragePercentage,
-                                coverage_sqm: this.coverageSquareMeters,
-                                rt_current: this.rtCurrentData,
-                                rt_treated: this.rtTreatedData
-                            })
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            this.saveStatus = this.t.saved;
-                        } else {
-                            this.saveStatus = this.t.error;
-                        }
-                    } catch (e) {
-                        this.saveStatus = this.t.error;
-                    }
-                }
-            }
-        }
-    </script>
-</body>
-</html>
+                        const
