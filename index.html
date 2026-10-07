@@ -19,6 +19,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 p-4 md:p-8 font-sans" oncontextmenu="return false;">
     <div class="max-w-7xl mx-auto space-y-6">
+        
         <!-- Header & Language Switcher -->
         <header class="flex justify-between items-center bg-white p-5 rounded-xl shadow-sm border border-slate-200">
             <div class="flex items-center gap-3">
@@ -34,6 +35,27 @@
             </div>
         </header>
 
+        <!-- SEZIONE SPIEGAZIONE DEL FUNZIONAMENTO -->
+        <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-3 text-sm">
+            <h2 class="text-base font-bold text-slate-900 uppercase tracking-wide" x-text="t.guideTitle"></h2>
+            <p class="text-slate-600 leading-relaxed" x-text="t.guideText1"></p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs">
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <span class="font-bold text-slate-900 block mb-1">1. 📐 Misure & Superfici</span>
+                    <span class="text-slate-500" x-text="t.guideStep1"></span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <span class="font-bold text-slate-900 block mb-1">2. 🎛️ Scelta Materiale</span>
+                    <span class="text-slate-500" x-text="t.guideStep2"></span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <span class="font-bold text-slate-900 block mb-1">3. 📊 Report & PDF</span>
+                    <span class="text-slate-500" x-text="t.guideStep3"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOOL PRINCIPALE DI CALCOLO -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Inputs Panel -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 lg:col-span-1 space-y-5">
@@ -143,19 +165,8 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons & Privacy Checkbox -->
+                <!-- Action Buttons & PDF Download / Sharing -->
                 <div class="space-y-3 pt-2 border-t">
-                    <div class="flex items-start gap-2 pt-1">
-                        <input type="checkbox" id="privacyCheck" x-model="privacyAccepted" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer">
-                        <label for="privacyCheck" class="text-[11px] text-slate-600 leading-tight cursor-pointer" x-text="t.privacyText"></label>
-                    </div>
-
-                    <!-- Pulsante Invio Richiesta con Prezzo White-Label -->
-                    <button @click="saveProject" :disabled="!privacyAccepted" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex justify-between items-center px-4">
-                        <span x-text="t.sendRequestBtn"></span>
-                        <span class="bg-indigo-800 text-xs px-2 py-0.5 rounded font-bold">199 €</span>
-                    </button>
-
                     <button @click="downloadPDF" class="w-full bg-sky-600 text-white p-3 rounded-lg font-semibold hover:bg-sky-700 transition text-sm shadow-sm" x-text="t.downloadPdf"></button>
                     
                     <div class="grid grid-cols-2 gap-2 pt-1">
@@ -167,7 +178,6 @@
                         </button>
                     </div>
                 </div>
-                <p x-text="saveStatus" class="text-xs text-center font-medium mt-2 text-slate-600"></p>
             </div>
 
             <!-- Results & Simulation Panel -->
@@ -262,6 +272,26 @@
 
             </div>
         </div>
+
+        <!-- PULSANTE ESTERNO IN BASSO PER INVIO RICHIESTA (199€/anno) -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="space-y-1 text-left w-full md:w-auto">
+                <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wide" x-text="t.bottomBannerTitle"></h3>
+                <p class="text-xs text-slate-500" x-text="t.bottomBannerDesc"></p>
+            </div>
+            <div class="w-full md:w-auto flex flex-col sm:flex-row items-center gap-3">
+                <div class="flex items-start gap-2 text-left">
+                    <input type="checkbox" id="privacyCheckBottom" x-model="privacyAccepted" class="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 cursor-pointer">
+                    <label for="privacyCheckBottom" class="text-[11px] text-slate-600 leading-tight cursor-pointer" x-text="t.privacyText"></label>
+                </div>
+                <button @click="saveProject" :disabled="!privacyAccepted" class="w-full sm:w-auto bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-3 whitespace-nowrap">
+                    <span x-text="t.sendRequestBtn"></span>
+                    <span class="bg-indigo-900 text-xs px-2.5 py-1 rounded font-extrabold" x-text="t.priceTag"></span>
+                </button>
+            </div>
+        </div>
+        <p x-text="saveStatus" class="text-xs text-center font-medium text-slate-600"></p>
+
     </div>
 
     <script>
@@ -286,16 +316,21 @@
 
         // CONFIGURAZIONE BRAND (Modificabile per ogni partner / ditta)
         const brandConfig = {
-            companyName: "Nome Vostra Azienda / Partner",
+            companyName: "IL TUO LOGO / Partner",
             companyTagline: "Professional Acoustic Solutions",
             companyDetails: "Indirizzo Azienda — Telefono / Contatti",
             website: "www.vostro-dominio.com",
-            logoSvg: `<svg class="h-8 w-auto text-slate-900" viewBox="0 0 220 32" fill="currentColor"><text x="0" y="24" font-family="sans-serif" font-weight="900" font-size="20" letter-spacing="1">IL TUO LOGO</text></svg>`
+            logoSvg: `<svg class="h-8 w-auto text-slate-900" viewBox="0 0 200 32" fill="currentColor"><text x="0" y="24" font-family="sans-serif" font-weight="900" font-size="20" letter-spacing="1">IL TUO LOGO</text></svg>`
         };
 
         const translations = {
             de: {
                 title: "Raumakustik & Nachhallzeit Rechner",
+                guideTitle: "Wie funktioniert dieser Akustikrechner?",
+                guideText1: "Dieses Tool berechnet in Echtzeit die Nachhallzeit (T60) Ihres Raumes basierend auf den Maßen und Materialien. Fügen Sie Ihre Raumwerte links ein, wählen Sie das passende Akustik-Produkt und analysieren Sie das Ergebnis im Diagramm.",
+                guideStep1: "Geben Sie Länge, Breite, Höhe und die Oberflächenmaterialien (Glas, Beton, Putz) ein.",
+                guideStep2: "Wählen Sie ein Akustik-Produkt aus und passen Sie die Behandlungsfläche an.",
+                guideStep3: "Laden Sie den professionellen Bericht als PDF herunter oder senden Sie uns die Anfrage.",
                 params: "Raumparameter",
                 projectName: "Projektname",
                 customerName: "Kunde",
@@ -311,6 +346,9 @@
                 productSelect: "Produkt aus Katalog",
                 treatmentPercentage: "Zu behandelnde Fläche (%)",
                 sendRequestBtn: "Anfrage senden",
+                priceTag: "199 € / Jahr",
+                bottomBannerTitle: "Möchten Sie dieses Projekt umsetzen lassen?",
+                bottomBannerDesc: "Senden Sie uns die berechneten Daten direkt zur schnellen Angebotserstellung.",
                 downloadPdf: "PDF-Bericht herunterladen",
                 privacyText: "Ich stimme der Verarbeitung meiner Daten zu.",
                 volume: "Raumvolumen",
@@ -341,6 +379,11 @@
             },
             ita: {
                 title: "Calcolatore Acustico e Tempo di Riverbero",
+                guideTitle: "Come funziona questo calcolatore acustico?",
+                guideText1: "Questo strumento calcola in tempo reale il tempo di riverbero (T60) del tuo ambiente in base alle dimensioni e ai materiali presenti. Inserisci i dati della stanza sulla sinistra, seleziona il prodotto fonoassorbente e analizza l'andamento nel grafico.",
+                guideStep1: "Inserisci lunghezza, larghezza, altezza e i materiali delle superfici (vetro, cemento, intonaco).",
+                guideStep2: "Seleziona un prodotto acustico a catalogo e imposta la percentuale di copertura desiderata.",
+                guideStep3: "Scarica il report professionale in PDF o invia direttamente la richiesta di preventivo.",
                 params: "Parametri della Stanza",
                 projectName: "Nome Progetto",
                 customerName: "Cliente",
@@ -356,6 +399,9 @@
                 productSelect: "Prodotto a Catalogo",
                 treatmentPercentage: "Percentuale di superficie da trattare",
                 sendRequestBtn: "Invia Richiesta",
+                priceTag: "199 € / anno",
+                bottomBannerTitle: "Vuoi realizzare questo progetto acustico?",
+                bottomBannerDesc: "Inviaci i dati calcolati per ricevere una consulenza e un preventivo personalizzato.",
                 downloadPdf: "Scarica Report PDF",
                 privacyText: "Ho letto e accetto l'informativa sulla privacy.",
                 volume: "Volume Stanza",
